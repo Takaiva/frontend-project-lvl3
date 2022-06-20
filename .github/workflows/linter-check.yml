@@ -1,4 +1,4 @@
-name: make lint
+name: linter status
 
 on: [push]
 
