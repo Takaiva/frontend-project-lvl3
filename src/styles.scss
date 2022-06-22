@@ -1,4 +1,14 @@
 @import "~bootstrap/scss/bootstrap";
 
+section.bg-custom-1 {
+  background: linear-gradient(90deg,#000000f2, #22423d, #000000f2);
+}
 
-
+.btn-primary {
+  background-color: #356f65;
+  border-color: #f9fafb94;
+  &:hover {
+    background-color: #379988;
+    border-color: #f9fafbf7;
+  }
+}
