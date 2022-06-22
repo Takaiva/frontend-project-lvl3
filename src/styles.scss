@@ -1,7 +1,43 @@
 @import "~bootstrap/scss/bootstrap";
 
+@font-face {
+  font-weight: 300;
+  font-family: 'Manrope';
+  src: url("fonts/Manrope/Manrope-Light.ttf");
+}
+
+@font-face {
+  font-weight: 400;
+  font-family: 'Manrope';
+  src: url("fonts/Manrope/Manrope-Regular.ttf");
+}
+
+@font-face {
+  font-weight: 700;
+  font-family: 'Manrope';
+  src: url("fonts/Manrope/Manrope-Bold.ttf");
+}
+
+
+h1.manrope-font {
+  font-family: 'Manrope';
+  font-weight: 400;
+
+  color: transparent;
+  -webkit-background-clip: text;
+  background-image: linear-gradient(to right, #79c994, #ee4c4c);
+
+  position:relative;
+  bottom: 10px;
+}
+
+.lead {
+  font-family: 'Manrope';
+  font-weight: 300;
+}
+
 section.bg-custom-1 {
-  background: linear-gradient(90deg,#000000f2, #22423d, #000000f2);
+  background: linear-gradient(90deg,#000000f2, #1c332f, #000000f2);
 }
 
 .btn-primary {
