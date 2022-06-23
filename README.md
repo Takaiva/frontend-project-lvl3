@@ -6,3 +6,5 @@
 
 ### Eslint
 [![linter status](https://github.com/Takaiva/frontend-project-lvl3/actions/workflows/linter-check.yml/badge.svg)](https://github.com/Takaiva/frontend-project-lvl3/actions/workflows/linter-check.yml)
+
+### Link https://readable-rss.vercel.app/
