@@ -4,42 +4,43 @@ import watcher from './view.js';
 
 const app = () => {
   const state = {
-    feed: [],
-    feedbackStatus: '',
-    isValidForm: '',
+    form: {
+      feed: [],
+      feedbackStatus: '',
+      isValidForm: '',
+    },
+    currentLng: 'en',
   };
+  const watchedState = watcher(state);
 
   const validateLink = (link) => {
-    const links = state.feed;
+    const links = state.form.feed;
     yup.setLocale({
       mixed: {
-        notOneOf: 'Provided RSS already exists',
+        notOneOf: 'notOneOf',
       },
       string: {
-        url: 'Invalid url',
+        url: 'validationError',
       },
     });
     const schema = yup.string().url().notOneOf(links);
     return schema.validate(link);
   };
 
-  const watchedState = watcher(state);
-
   const form = document.querySelector('form');
-
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const url = formData.get('url');
     validateLink(url).then((data) => {
-      watchedState.feed.push(data);
-      watchedState.feedbackStatus = 'RSS successfully uploaded';
-      watchedState.isValidForm = true;
+      watchedState.form.feed.push(data);
+      watchedState.form.feedbackStatus = 'success';
+      watchedState.form.isValidForm = true;
       form.reset();
     }).catch((err) => {
       const [error] = err.errors;
-      watchedState.feedbackStatus = error;
-      watchedState.isValidForm = false;
+      watchedState.form.feedbackStatus = `failure.${error}`;
+      watchedState.form.isValidForm = false;
     });
     console.log(state);
   });
