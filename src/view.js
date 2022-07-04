@@ -19,16 +19,18 @@ export default (elements) => (path, value, previousValue) => {
 
   switch (path) {
     case 'feedFetchingProcess':
+      //disable interface
       if (value === 'started') {
         fieldset.setAttribute('disabled', '');
       }
+      //enable interface
       if (value === 'finished') {
         fieldset.removeAttribute('disabled');
       }
       break;
     case 'postsAndFeedsContainersState':
       if (value === 'render') {
-        // when containers for feed and post items are rendered
+        // when the first rss successfully downloaded, render templates for feeds and posts containers
         renderPostsAndFeedsContainers(feedsContainer, postsContainer);
       }
       break;

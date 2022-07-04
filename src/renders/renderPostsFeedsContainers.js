@@ -1,6 +1,5 @@
 export default (feedsContainer, postsContainer) => {
   const feedsCont = feedsContainer;
-
   const feedBorder = document.createElement('div');
   feedBorder.classList.add('card', 'border-0');
 
@@ -16,7 +15,6 @@ export default (feedsContainer, postsContainer) => {
   feedsCont.appendChild(feedBorder);
 
   const postsCont = postsContainer;
-
   const postsBorder = document.createElement('div');
   postsBorder.classList.add('card', 'border-0');
 
