@@ -1,27 +1,18 @@
 @import "~bootstrap/scss/bootstrap";
 
 @font-face {
-  font-weight: 300;
-  font-family: 'Manrope';
-  src: url("fonts/Manrope/Manrope-Light.ttf");
+  font-family: 'Manrope-light';
+  src: url("./fonts/Manrope/Manrope-Light.ttf");
 }
 
 @font-face {
-  font-weight: 400;
-  font-family: 'Manrope';
-  src: url("fonts/Manrope/Manrope-Regular.ttf");
-}
-
-@font-face {
-  font-weight: 700;
-  font-family: 'Manrope';
-  src: url("fonts/Manrope/Manrope-Bold.ttf");
+  font-family: 'Manrope-regular', serif;
+  src: url("./fonts/Manrope/Manrope-Regular.ttf");
 }
 
 
 h1.manrope-font {
-  font-family: 'Manrope';
-  font-weight: 400;
+  font-family: 'Manrope-regular';
 
   color: transparent;
   -webkit-background-clip: text;
@@ -32,8 +23,7 @@ h1.manrope-font {
 }
 
 .lead {
-  font-family: 'Manrope';
-  font-weight: 300;
+  font-family: 'Manrope-light';
 }
 
 section.bg-custom-1 {
@@ -41,10 +31,10 @@ section.bg-custom-1 {
 }
 
 .btn-primary {
-  background-color: #356f65;
+  background-color: #086555;
   border-color: #f9fafb94;
   &:hover {
-    background-color: #379988;
+    background-color: #0e7563;
     border-color: #f9fafbf7;
   }
 }
