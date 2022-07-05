@@ -9,7 +9,7 @@ export default {
     },
     form: {
       feedbackStatus: {
-        success: 'RSS successfully downloaded',
+        success: 'RSS successfully loaded',
         failure: {
           notOneOf: 'Provided RSS already exists',
           validationError: 'Invalid URL',

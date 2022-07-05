@@ -4,6 +4,7 @@ import onChange from "on-change";
 import downloadRss from './RSSdownloader.js';
 import parseRss from './RSSparser.js';
 import render from './view.js';
+import updatePosts from './updatePosts.js';
 
 const app = () => {
   const elements = {
@@ -17,15 +18,15 @@ const app = () => {
   };
 
   const state = onChange({
-    currentLng: 'en',
-    urls: [],
+    currentLng: 'en', // en, ru
+    urls: [], // rss-stream urls
     feeds: [],
     posts: [],
     feedFetchingProcess: '', // started, finished
     postsAndFeedsContainersState: 'not rendered', // not rendered, render
     form: {
-      feedbackStatus: '',
-      isValidForm: '',
+      feedbackStatus: '', // success/failure.{error}
+      isValidForm: '', // true/false
     },
   }, render(elements));
 
@@ -43,12 +44,19 @@ const app = () => {
     return schema.validate(link);
   };
 
+  const runPostUpdatingProcess = () => {
+    const period = 5000;
+    updatePosts(state.urls, state);
+    setTimeout(() => runPostUpdatingProcess(), period);
+  };
+
   const startRssSetup = (url) => {
     // disabling form interface while downloading and setting up the rss
     state.feedFetchingProcess = 'started';
     validateLink(url).then((validatedUrl) => {
       downloadRss(validatedUrl).then((response) => {
         parseRss(response.data.contents).then(({ feed, posts }) => {
+          console.log(feed);
           // when parsing finished successfully, rendering containers for feed and post items
           if (state.postsAndFeedsContainersState === 'not rendered') {
             state.postsAndFeedsContainersState = 'render';
@@ -69,28 +77,29 @@ const app = () => {
 
           // update feedback highlighting color (red or green) depending on the feedback status
           state.form.isValidForm = !(state.form.feedbackStatus).includes('failure');
-          console.log(posts);
+          // console.log(posts);
           // reset form when rss is downloaded and set up successfully
           elements.form.reset();
-        }).catch((err) => {
-          const parsingError = err.message;
-          state.form.feedbackStatus = `failure.${parsingError}`;
+          runPostUpdatingProcess();
+        }).catch((parsingError) => {
+          const errorMessage = parsingError.message;
+          state.form.feedbackStatus = `failure.${errorMessage}`;
           state.form.isValidForm = !(state.form.feedbackStatus).includes('failure');
           state.feedFetchingProcess = 'finished';
         });
-      }).catch((err) => {
-        if (err.response) {
+      }).catch((networkError) => {
+        if (networkError.response) {
           state.form.feedbackStatus = `failure.badResponse`;
         }
-        if (err.request) {
+        if (networkError.request) {
           state.form.feedbackStatus = `failure.noResponse`;
         }
         state.form.isValidForm = !(state.form.feedbackStatus).includes('failure');
         state.feedFetchingProcess = 'finished';
       });
-    }).catch((err) => {
-      const validationError = err.message;
-      state.form.feedbackStatus = `failure.${validationError}`;
+    }).catch((validationError) => {
+      const errorMessage = validationError.message;
+      state.form.feedbackStatus = `failure.${errorMessage}`;
       state.form.isValidForm = !(state.form.feedbackStatus).includes('failure');
       state.feedFetchingProcess = 'finished';
     });
