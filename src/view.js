@@ -63,8 +63,8 @@ export default (elements) => (path, value, previousValue) => {
       // just to original article source, and we have a button for it
       const postDescriptionWithNoHrefs = postDescription.replaceAll(/<a.+a>/g, '');
       modalTitle.textContent = postTitle;
-      // using innerHTML instead of textContent as some sources
-      // provide embedded html elements for formatting in post descriptions
+      // using innerHTML instead of textContent as some sources provide
+      // embedded html elements for formatting in post descriptions like <p>
       modalBody.innerHTML = postDescriptionWithNoHrefs;
       linkToOriginal.href = postLink;
       break;
