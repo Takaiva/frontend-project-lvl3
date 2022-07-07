@@ -1,11 +1,13 @@
 export default {
   translation: {
-    interface: {
+    userInterface: {
       submitButton: 'Добавить',
       feeds: 'Фиды',
       posts: 'Посты',
       preview: 'Просмотр',
       exampleLink: 'Пример: https://habr.com/ru/rss/hubs/all/',
+      modalButtonContinueReading: 'Читать полностью',
+      modalButtonClose: 'Закрыть',
     },
     form: {
       feedbackStatus: {
