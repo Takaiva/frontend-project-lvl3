@@ -5,32 +5,32 @@ import renderFeed from "./renders/renderFeed.js";
 import renderPosts from "./renders/renderPosts.js";
 
 export default (elements) => (path, value, previousValue) => {
-  const defaultLanguage = 'en';
-  const translation = i18next.createInstance();
-  translation.init({
-    lng: defaultLanguage,
+  const i18n = i18next.createInstance();
+  i18n.init({
+    lng: 'en',
     debug: false,
     resources,
   }).then((t) => { t('key'); });
 
   const {
-    feedback, input, fieldset, feedsContainer, postsContainer,
+    feedback, input, fieldset, feedsContainer, postsContainer, modalWindow,
   } = elements;
 
   switch (path) {
     case 'feedFetchingProcess':
-      //disable interface
+      // disable interface
       if (value === 'started') {
         fieldset.setAttribute('disabled', '');
       }
-      //enable interface
+      // enable interface
       if (value === 'finished') {
         fieldset.removeAttribute('disabled');
       }
       break;
     case 'postsAndFeedsContainersState':
       if (value === 'render') {
-        // when the first rss successfully downloaded, render templates for feeds and posts containers
+        // when the first rss successfully downloaded,
+        // render templates for feeds and posts containers
         renderPostsAndFeedsContainers(feedsContainer, postsContainer);
       }
       break;
@@ -54,9 +54,23 @@ export default (elements) => (path, value, previousValue) => {
       }) => renderPosts(postTitle, postLink, postId, feedId)).reverse();
       renderedPostElements.forEach((el) => postItemsContainer.prepend(el));
       break;
+    case 'modalWindowObject':
+      const modalTitle = modalWindow.querySelector('.modal-title');
+      const modalBody = modalWindow.querySelector('.modal-body');
+      const linkToOriginal = modalWindow.querySelector('.full-article');
+      const { postTitle, postDescription, postLink } = value;
+      // remove links from the description as if often refers
+      // just to original article source, and we have a button for it
+      const postDescriptionWithNoHrefs = postDescription.replaceAll(/<a.+a>/g, '');
+      modalTitle.textContent = postTitle;
+      // using innerHTML instead of textContent as some sources
+      // provide embedded html elements for formatting in post descriptions
+      modalBody.innerHTML = postDescriptionWithNoHrefs;
+      linkToOriginal.href = postLink;
+      break;
     case 'form.feedbackStatus':
       // render feedback status text
-      feedback.textContent = translation.t(`${path}.${value}`);
+      feedback.textContent = i18n.t(`${path}.${value}`);
       break;
     case 'form.isValidForm':
       // change feedback highlighting color
@@ -71,6 +85,33 @@ export default (elements) => (path, value, previousValue) => {
         input.classList.add('is-invalid');
       }
       break;
+    case 'currentLng':
+      const userInterface = {
+        submitButton: document.querySelector('button[type="submit"]'),
+        feeds: document.querySelector('.feeds .card-title'),
+        posts: document.querySelector('.posts .card-title'),
+        preview: document.querySelectorAll('button[data-bs-toggle="modal"]'),
+        exampleLink: document.querySelector('p.mt-2.mb-0.text-muted'),
+        modalButtonContinueReading: document.querySelector('.modal a.full-article'),
+        modalButtonClose: document.querySelector('.modal button.btn-secondary'),
+      };
+        i18n.changeLanguage(value)
+            .then((t) => t('key'));
+
+        // translate interface
+        Object.entries(userInterface).forEach(([key, value]) => {
+          if (value === null) {
+            return;
+          }
+          //translate user interface
+          if (key === 'preview') {
+            value.forEach((previewButton) => previewButton.textContent = i18n.t(`userInterface.${key}`));
+          } else {
+            value.textContent = i18n.t(`userInterface.${key}`);
+          }
+        });
+
+        break;
     default:
       break;
   }
