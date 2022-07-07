@@ -95,23 +95,26 @@ export default (elements) => (path, value, previousValue) => {
         modalButtonContinueReading: document.querySelector('.modal a.full-article'),
         modalButtonClose: document.querySelector('.modal button.btn-secondary'),
       };
-        i18n.changeLanguage(value)
-            .then((t) => t('key'));
 
-        // translate interface
-        Object.entries(userInterface).forEach(([key, value]) => {
-          if (value === null) {
-            return;
-          }
-          //translate user interface
-          if (key === 'preview') {
-            value.forEach((previewButton) => previewButton.textContent = i18n.t(`userInterface.${key}`));
-          } else {
-            value.textContent = i18n.t(`userInterface.${key}`);
-          }
-        });
+      i18n.changeLanguage(value)
+        .then((t) => t('key'));
 
-        break;
+      // translate interface
+      Object.entries(userInterface).forEach(([key, el]) => {
+        if (el === null) {
+          return;
+        }
+        // translate user interface
+        if (key === 'preview') {
+          el.forEach((previewButton) => {
+            previewButton.textContent = i18n.t(`userInterface.${key}`);
+          });
+        } else {
+          el.textContent = i18n.t(`userInterface.${key}`);
+        }
+      });
+
+      break;
     default:
       break;
   }

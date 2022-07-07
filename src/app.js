@@ -34,7 +34,7 @@ const app = () => {
   }, render(elements));
 
   const validateLink = (link) => {
-    const links = state.feeds.map(feed => feed.feedOriginLink);
+    const links = state.feeds.map((feed) => feed.feedOriginLink);
     yup.setLocale({
       mixed: {
         notOneOf: 'notOneOf',
@@ -85,7 +85,7 @@ const app = () => {
           elements.input.focus();
 
           // start updating posts process
-          //using state to not to trigger updating more that one times
+          // using state to not to trigger updating more that one times
           if (state.updatingProcess !== 'started') {
             runPostUpdatingProcess();
             state.updatingProcess = 'started';
@@ -127,8 +127,8 @@ const app = () => {
   elements.modalWindow.addEventListener('show.bs.modal', (e) => {
     const button = e.relatedTarget;
     const neededPostId = Number(button.dataset.id);
-    const posts = state.posts.map(post => post);
-    const neededPost = posts.find(post => post.postId === neededPostId);
+    const posts = state.posts.map((post) => post);
+    const neededPost = posts.find((post) => post.postId === neededPostId);
     state.modalWindowObject = neededPost;
   });
 
@@ -137,7 +137,7 @@ const app = () => {
     const targetButton = e.target;
     const language = targetButton.dataset.lang;
     state.currentLng = language;
-  }))
+  }));
 };
 
 export default app;
