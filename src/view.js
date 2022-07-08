@@ -39,7 +39,7 @@ export default (elements, language) => (path, value, previousValue) => {
       const feedItemsContainer = document.querySelector('div.feeds ul.list-group');
       const lastAddedFeedItem = (value[value.length - 1]);
       const { feedTitle, feedDescription } = lastAddedFeedItem;
-      const { feedItem } = renderFeed(feedTitle, feedDescription);
+      const feedItem = renderFeed(feedTitle, feedDescription);
       feedItemsContainer.prepend(feedItem);
       break;
     }

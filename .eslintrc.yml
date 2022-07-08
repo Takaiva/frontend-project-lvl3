@@ -11,4 +11,4 @@ rules:
   import/extensions: 0 # FIXME: remove when rule will be adjusted for new nodejs version
   quotes: 0
   no-unused-expressions: 0
-
+  no-param-reassign: 0
