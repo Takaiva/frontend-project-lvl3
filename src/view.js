@@ -92,6 +92,7 @@ export default (elements, language) => (path, value, previousValue) => {
         posts: document.querySelector('.posts .card-title'),
         preview: document.querySelectorAll('button[data-bs-toggle="modal"]'),
         exampleLink: document.querySelector('p.mt-2.mb-0.text-muted'),
+        label: document.querySelector('label[for="url-input"]'),
         modalButtonContinueReading: document.querySelector('.modal a.full-article'),
         modalButtonClose: document.querySelector('.modal button.btn-secondary'),
       };

@@ -6,7 +6,7 @@ export default (postTitle, postLink, postId) => {
 ${postTitle}
 </a>
 <button type="button" class="btn btn-outline-primary btn-sm" data-id=${postId} data-bs-toggle="modal" data-bs-target="#modal">
-Preview
+Просмотр
 </button>`;
   postItem.querySelector(`a[data-id="${postId}"]`).addEventListener('click', (e) => {
     const el = e.target;

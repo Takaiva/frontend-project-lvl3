@@ -5,6 +5,7 @@ export default {
       feeds: 'Фиды',
       posts: 'Посты',
       preview: 'Просмотр',
+      label: 'Ссылка RSS',
       exampleLink: 'Пример: https://habr.com/ru/rss/hubs/all/',
       modalButtonContinueReading: 'Читать полностью',
       modalButtonClose: 'Закрыть',
