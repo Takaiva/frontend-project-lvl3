@@ -8,11 +8,7 @@ parserOptions:
   sourceType: module
 rules:
   no-console: 0
+  import/extensions: 0 # FIXME: remove when rule will be adjusted for new nodejs version
   quotes: 0
-  import/extensions: # FIXME: remove when rule will be adjusted for new nodejs version
-    - error
-    - ignorePackages
-    - js: always
-  no-underscore-dangle: [2, { "allow": ["__filename", "__dirname"] }]
-  no-case-declarations: 0
-  no-param-reassign: 0
+  no-unused-expressions: 0
+

@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import onChange from "on-change";
+import onChange from 'on-change';
 
 import downloadRss from './RSSdownloader.js';
 import parseRss from './RSSparser.js';
@@ -102,10 +102,10 @@ const app = () => {
       }).catch((networkError) => {
         // display error message
         if (networkError.response) {
-          state.form.feedbackStatus = `failure.badResponse`;
+          state.form.feedbackStatus = 'failure.badResponse';
         }
         if (networkError.request) {
-          state.form.feedbackStatus = `failure.noResponse`;
+          state.form.feedbackStatus = 'failure.noResponse';
         }
         state.form.isValidForm = !(state.form.feedbackStatus).includes('failure');
         state.feedFetchingProcess = 'finished';

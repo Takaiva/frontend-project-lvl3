@@ -1,8 +1,8 @@
-import i18next from "i18next";
+import i18next from 'i18next';
 import resources from './locales/index.js';
 import renderPostsAndFeedsContainers from "./renders/renderPostsFeedsContainers.js";
-import renderFeed from "./renders/renderFeed.js";
-import renderPosts from "./renders/renderPosts.js";
+import renderFeed from './renders/renderFeed.js';
+import renderPosts from './renders/renderPosts.js';
 
 export default (elements, language) => (path, value, previousValue) => {
   const i18n = i18next.createInstance();
@@ -34,15 +34,16 @@ export default (elements, language) => (path, value, previousValue) => {
         renderPostsAndFeedsContainers(feedsContainer, postsContainer);
       }
       break;
-    case 'feeds':
+    case 'feeds': {
       // render last added feed item
       const feedItemsContainer = document.querySelector('div.feeds ul.list-group');
       const lastAddedFeedItem = (value[value.length - 1]);
       const { feedTitle, feedDescription } = lastAddedFeedItem;
-      const renderedFeedElement = renderFeed(feedTitle, feedDescription);
-      feedItemsContainer.prepend(renderedFeedElement);
+      const { feedItem } = renderFeed(feedTitle, feedDescription);
+      feedItemsContainer.prepend(feedItem);
       break;
-    case 'posts':
+    }
+    case 'posts': {
       // render last added post items
       const postItemsContainer = document.querySelector('div.posts ul.list-group');
       const previouslyAddedPostItems = previousValue;
@@ -54,7 +55,8 @@ export default (elements, language) => (path, value, previousValue) => {
       }) => renderPosts(postTitle, postLink, postId, feedId)).reverse();
       renderedPostElements.forEach((el) => postItemsContainer.prepend(el));
       break;
-    case 'modalWindowObject':
+    }
+    case 'modalWindowObject': {
       const modalTitle = modalWindow.querySelector('.modal-title');
       const modalBody = modalWindow.querySelector('.modal-body');
       const linkToOriginal = modalWindow.querySelector('.full-article');
@@ -68,13 +70,15 @@ export default (elements, language) => (path, value, previousValue) => {
       modalBody.innerHTML = postDescriptionWithNoHrefs;
       linkToOriginal.href = postLink;
       break;
-    case 'form.feedbackStatus':
+    }
+    case 'form.feedbackStatus': {
       // render feedback status message
       feedback.textContent = i18n.t(`${path}.${value}`);
       break;
-    case 'form.isValidForm':
+    }
+    case 'form.isValidForm': {
       // change feedback highlighting color
-      const actualHighlight = value === true ? `text-success` : `text-danger`;
+      const actualHighlight = value === true ? 'text-success' : 'text-danger';
       const previousHighlight = previousValue === true ? 'text-success' : 'text-danger';
       feedback.classList.remove(previousHighlight);
       feedback.classList.add(actualHighlight);
@@ -85,7 +89,8 @@ export default (elements, language) => (path, value, previousValue) => {
         input.classList.add('is-invalid');
       }
       break;
-    case 'currentLng':
+    }
+    case 'currentLng': {
       const userInterface = {
         submitButton: document.querySelector('button[type="submit"]'),
         feeds: document.querySelector('.feeds .card-title'),
@@ -114,8 +119,8 @@ export default (elements, language) => (path, value, previousValue) => {
           el.textContent = i18n.t(`userInterface.${key}`);
         }
       });
-
       break;
+    }
     default:
       break;
   }

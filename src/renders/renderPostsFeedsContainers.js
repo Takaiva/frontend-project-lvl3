@@ -20,7 +20,7 @@ export default (feedsContainer, postsContainer) => {
 
   const postsCardBody = document.createElement('div');
   postsCardBody.classList.add('card-body');
-  postsCardBody.innerHTML = `<h2 class="card-title h4">Посты</h2>`;
+  postsCardBody.innerHTML = '<h2 class="card-title h4">Посты</h2>';
   postsBorder.appendChild(postsCardBody);
 
   const postsList = document.createElement('ul');

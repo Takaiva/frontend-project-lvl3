@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import downloadRss from './RSSdownloader.js';
-import parseForUpdating from "./RSSparserForUpdating.js";
+import parseForUpdating from './RSSparserForUpdating.js';
 
 // To make post ids ordered, i am using another parsing function,
 // to make correct feedId relation between posts and feeds, and
