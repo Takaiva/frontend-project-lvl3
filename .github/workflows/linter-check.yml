@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [17.x]
+        node-version: [14.x]
     steps:
       # Check-out repository under GitHub workspace
       # https://github.com/actions/checkout
