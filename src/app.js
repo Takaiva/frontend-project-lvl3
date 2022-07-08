@@ -79,7 +79,7 @@ const app = () => {
 
           // update feedback highlighting color (red or green) depending on the feedback status
           state.form.isValidForm = !(state.form.feedbackStatus).includes('failure');
-          // console.log(posts);
+
           // reset form when rss is downloaded and set up successfully
           elements.formEl.reset();
 
@@ -113,7 +113,6 @@ const app = () => {
     }).catch((validationError) => {
       // display error message
       const errorMessage = validationError.message;
-      console.log(errorMessage);
       state.form.feedbackStatus = `failure.${errorMessage}`;
       state.form.isValidForm = !(state.form.feedbackStatus).includes('failure');
       state.feedFetchingProcess = 'finished';
