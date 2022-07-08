@@ -7,6 +7,7 @@ import render from './view.js';
 import updatePosts from './updatePosts.js';
 
 const app = () => {
+  const defaultLanguage = 'ru';
   const elements = {
     formEl: document.querySelector('form'),
     fieldset: document.querySelector('form fieldset'),
@@ -20,7 +21,7 @@ const app = () => {
   };
 
   const state = onChange({
-    currentLng: 'en', // en, ru
+    currentLng: defaultLanguage, // en, ru
     feeds: [],
     posts: [],
     updatingProcess: null, // started, null
@@ -31,7 +32,7 @@ const app = () => {
       isValidForm: null, // true/false
     },
     modalWindowObject: null,
-  }, render(elements));
+  }, render(elements, defaultLanguage));
 
   const validateLink = (link) => {
     const links = state.feeds.map((feed) => feed.feedOriginLink);
@@ -129,6 +130,7 @@ const app = () => {
     const neededPostId = Number(button.dataset.id);
     const posts = state.posts.map((post) => post);
     const neededPost = posts.find((post) => post.postId === neededPostId);
+    neededPost.viewed = true;
     state.modalWindowObject = neededPost;
   });
 

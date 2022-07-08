@@ -4,10 +4,10 @@ import renderPostsAndFeedsContainers from "./renders/renderPostsFeedsContainers.
 import renderFeed from "./renders/renderFeed.js";
 import renderPosts from "./renders/renderPosts.js";
 
-export default (elements) => (path, value, previousValue) => {
+export default (elements, language) => (path, value, previousValue) => {
   const i18n = i18next.createInstance();
   i18n.init({
-    lng: 'en',
+    lng: language,
     debug: false,
     resources,
   }).then((t) => { t('key'); });

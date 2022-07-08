@@ -8,5 +8,18 @@ ${postTitle}
 <button type="button" class="btn btn-outline-primary btn-sm" data-id=${postId} data-bs-toggle="modal" data-bs-target="#modal">
 Preview
 </button>`;
+  postItem.querySelector(`a[data-id="${postId}"]`).addEventListener('click', (e) => {
+    const el = e.target;
+    el.classList.remove('fw-bold');
+    el.classList.add('fw-normal', 'link-secondary');
+  });
+
+  postItem.querySelector(`button[data-id="${postId}"]`).addEventListener('click', (e) => {
+    const el = e.target;
+    const { id } = el.dataset;
+    const linkElement = postItem.querySelector(`a[data-id="${id}"]`);
+    linkElement.classList.remove('fw-bold');
+    linkElement.classList.add('fw-normal', 'link-secondary');
+  });
   return postItem;
 };
