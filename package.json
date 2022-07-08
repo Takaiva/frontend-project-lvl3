@@ -1,12 +1,14 @@
 {
   "name": "@hexlet/code",
   "version": "1.0.0",
+  "type": "module",
   "description": "RSS-agregator, my third frontend project.",
   "main": "src/app.js",
   "scripts": {
     "webpack": "webpack",
     "build": "webpack --mode=development",
     "prod": "webpack --mode=production",
+    "serve": "webpack serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
