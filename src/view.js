@@ -69,7 +69,7 @@ export default (elements, language) => (path, value, previousValue) => {
       linkToOriginal.href = postLink;
       break;
     case 'form.feedbackStatus':
-      // render feedback status text
+      // render feedback status message
       feedback.textContent = i18n.t(`${path}.${value}`);
       break;
     case 'form.isValidForm':

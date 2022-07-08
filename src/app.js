@@ -11,7 +11,7 @@ const app = () => {
   const elements = {
     formEl: document.querySelector('form'),
     fieldset: document.querySelector('form fieldset'),
-    input: document.querySelector('form input'),
+    input: document.getElementById('url-input'),
     button: document.querySelector('form button'),
     feedback: document.querySelector('p.feedback'),
     feedsContainer: document.querySelector('div.feeds'),
@@ -42,9 +42,10 @@ const app = () => {
       },
       string: {
         url: 'validationError',
+        min: 'isEmpty',
       },
     });
-    const schema = yup.string().url().notOneOf(links);
+    const schema = yup.string().url().min(1).notOneOf(links);
     return schema.validate(link);
   };
 
@@ -112,6 +113,7 @@ const app = () => {
     }).catch((validationError) => {
       // display error message
       const errorMessage = validationError.message;
+      console.log(errorMessage);
       state.form.feedbackStatus = `failure.${errorMessage}`;
       state.form.isValidForm = !(state.form.feedbackStatus).includes('failure');
       state.feedFetchingProcess = 'finished';

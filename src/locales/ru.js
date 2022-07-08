@@ -14,11 +14,12 @@ export default {
       feedbackStatus: {
         success: 'RSS успешно загружен',
         failure: {
+          isEmpty: 'Не должно быть пустым',
           notOneOf: 'RSS уже существует',
           validationError: 'Ссылка должна быть валидным URL',
           parsingError: 'Ресурс не содержит валидный RSS',
           badResponse: 'Сервер вернул ошибку, скорее всего сессия истекла, обновите страницу и повторите попытку',
-          noResponse: 'Плохое соединение или сервер не отвечает',
+          noResponse: 'Ошибка сети',
         },
       },
     },

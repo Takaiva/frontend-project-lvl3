@@ -14,6 +14,7 @@ export default {
       feedbackStatus: {
         success: 'RSS successfully loaded',
         failure: {
+          isEmpty: 'Should not be empty',
           notOneOf: 'Provided RSS already exists',
           validationError: 'Invalid URL',
           parsingError: 'Provided resource does not contain valid RSS',
