@@ -13,5 +13,5 @@ export default (feedTitle, feedDescription) => {
   feedItem.appendChild(title);
   feedItem.appendChild(description);
 
-  return feedItem;
+  return { feedItem };
 };
