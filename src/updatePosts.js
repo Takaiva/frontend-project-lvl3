@@ -19,7 +19,6 @@ export default (state) => {
             const newPostsTitles = _.differenceWith(allNewPostTitles, oldPostTitles, _.isEqual);
             newPostsTitles.forEach((title) => {
               const newPost = updatedPosts.find((post) => post.postTitle === title);
-              console.log(newPost);
               newPost.feedId = feed.feedId;
               newPost.postId = Number(_.uniqueId());
               state.posts = (state.posts).concat([newPost]);

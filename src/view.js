@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import resources from './locales/index.js';
-import renderPostsAndFeedsContainers from "./renders/renderPostsFeedsContainers.js";
+import renderPostsAndFeedsContainers from './renders/renderPostsFeedsContainers.js';
 import renderFeed from './renders/renderFeed.js';
 import renderPosts from './renders/renderPosts.js';
 
