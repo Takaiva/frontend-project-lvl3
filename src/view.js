@@ -67,7 +67,7 @@ export default (elements, language) => (path, value, previousValue) => {
       modalTitle.textContent = postTitle;
       // using innerHTML instead of textContent as some sources provide
       // embedded html elements for formatting in post descriptions like <p>
-      modalBody.textContent = postDescriptionWithNoHrefs;
+      modalBody.innerHTML = postDescriptionWithNoHrefs;
       linkToOriginal.href = postLink;
       break;
     }
