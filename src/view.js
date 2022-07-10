@@ -61,14 +61,14 @@ export default (elements, language) => (path, value, previousValue) => {
       const modalBody = modalWindow.querySelector('.modal-body');
       const linkToOriginal = modalWindow.querySelector('.full-article');
       const { postTitle, postDescription, postLink } = value;
-      // remove last <a>...</a> pattern occurrence from the description as if often refers
-      // just to original article source, but we have a button for it
-      // and save other <a>...</a> pattern occurrences as the often
-      // contain needed text
+      // remove last <a>...</a> pattern occurrence from the description as it often refers
+      // just to original article source, but we have a button for it,
+      // and save other <a>...</a> pattern occurrences as they often contain needed text
       const postDescriptionWithNoLastHref = postDescription.replaceAll(/(<a)(?!.*\1).+<\/a>/g, '');
       modalTitle.textContent = postTitle;
       // using innerHTML instead of textContent as some sources provide
-      // embedded html elements for formatting in post descriptions like <p>
+      // embedded html elements for formatting in post descriptions like <p>,
+      // also allows users to see images (<img>) embedded in description
       modalBody.innerHTML = postDescriptionWithNoLastHref;
       linkToOriginal.href = postLink;
       break;
