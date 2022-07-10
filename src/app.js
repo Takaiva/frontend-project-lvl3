@@ -70,6 +70,7 @@ const app = () => {
           // update info about added feeds and posts in state
           state.posts = (state.posts).concat(posts);
           state.feeds = (state.feeds).concat(feed);
+          console.log(state.posts);
 
           // display success message
           state.form.feedbackStatus = 'success';
