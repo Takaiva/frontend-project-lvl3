@@ -1,6 +1,6 @@
 import './styles.scss';
 import 'bootstrap';
 
-import app from './app.js';
+import runApp from './app.js';
 
-app();
+runApp();

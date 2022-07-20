@@ -1,17 +1,9 @@
-import i18next from 'i18next';
-import resources from './locales/index.js';
 import renderPostsAndFeedsContainers from './renders/renderPostsFeedsContainers.js';
 import renderFeed from './renders/renderFeed.js';
 import renderPosts from './renders/renderPosts.js';
+import resources from './locales/index.js';
 
-export default (elements, language) => (path, value, previousValue) => {
-  const i18n = i18next.createInstance();
-  i18n.init({
-    lng: language,
-    debug: false,
-    resources,
-  }).then((t) => { t('key'); });
-
+export default (elements, i18n) => (path, value, previousValue) => {
   const {
     feedback, input, fieldset, feedsContainer, postsContainer, modalWindow,
   } = elements;
@@ -102,11 +94,11 @@ export default (elements, language) => (path, value, previousValue) => {
         label: document.querySelector('label[for="url-input"]'),
         modalButtonContinueReading: document.querySelector('.modal a.full-article'),
         modalButtonClose: document.querySelector('.modal button.btn-secondary'),
+        feedback: document.querySelector('p.feedback'),
       };
 
       i18n.changeLanguage(value)
         .then((t) => t('key'));
-
       // translate interface
       Object.entries(userInterface).forEach(([key, el]) => {
         if (el === null) {
@@ -117,6 +109,21 @@ export default (elements, language) => (path, value, previousValue) => {
           el.forEach((previewButton) => {
             previewButton.textContent = i18n.t(`userInterface.${key}`);
           });
+        } else if (key === 'feedback') {
+          const currentText = el.textContent;
+          if (currentText === '') {
+            return;
+          }
+          const previousLng = previousValue;
+          if (feedback.classList.contains('text-danger')) {
+            const correspondingPath = 'form.feedbackStatus.failure';
+            const correspondingLocale = resources[previousLng].translation.form.feedbackStatus.failure;
+            const localeKey = Object.keys(correspondingLocale)
+              .find((neededKey) => correspondingLocale[neededKey] === currentText);
+            el.textContent = i18n.t(`${correspondingPath}.${localeKey}`);
+          } else {
+            el.textContent = i18n.t('form.feedbackStatus.success');
+          }
         } else {
           el.textContent = i18n.t(`userInterface.${key}`);
         }
