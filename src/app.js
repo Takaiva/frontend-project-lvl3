@@ -151,8 +151,7 @@ export default () => {
     // translate interface into ru or en
     elements.translationButtons.forEach((button) => button.addEventListener('click', (e) => {
       const targetButton = e.target;
-      const language = targetButton.dataset.lang;
-      state.currentLng = language;
+      state.currentLng = targetButton.dataset.lang;
     }));
   });
 };

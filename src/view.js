@@ -5,7 +5,7 @@ import resources from './locales/index.js';
 
 export default (elements, i18n) => (path, value, previousValue) => {
   const {
-    feedback, input, fieldset, feedsContainer, postsContainer, modalWindow,
+    feedback, input, fieldset, feedsContainer, postsContainer, modalWindow, translationButtons,
   } = elements;
 
   switch (path) {
@@ -106,12 +106,18 @@ export default (elements, i18n) => (path, value, previousValue) => {
 
       i18n.changeLanguage(value)
         .then((t) => t('key'));
-      // translate interface
+
+      // switch coloring of translation buttons
+      translationButtons.forEach((button) => button.classList.remove('bg-success'));
+      const activeTranslationButton = document.querySelector(`button[data-lang=${value}]`);
+      activeTranslationButton.classList.add('bg-success');
+
+      // translate user interface
       Object.entries(userInterface).forEach(([key, el]) => {
         if (el === null) {
           return;
         }
-        // translate user interface
+
         if (key === 'preview') {
           el.forEach((previewButton) => {
             previewButton.textContent = i18n.t(`userInterface.${key}`);
