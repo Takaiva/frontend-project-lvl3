@@ -143,8 +143,7 @@ export default () => {
     elements.modalWindow.addEventListener('show.bs.modal', (e) => {
       const button = e.relatedTarget;
       const neededPostId = Number(button.dataset.id);
-      const posts = state.posts.map((post) => post);
-      const neededPost = posts.find((post) => post.postId === neededPostId);
+      const neededPost = (state.posts).find((post) => post.postId === neededPostId);
       neededPost.viewed = true;
       state.modalWindowObject = neededPost;
     });

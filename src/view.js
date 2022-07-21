@@ -41,19 +41,15 @@ export default (elements, i18n) => (path, value, previousValue) => {
       postItemsContainer.innerHTML = '';
       const isAnyActiveFeed = value.some((post) => post.show === true);
       if (isAnyActiveFeed) {
-        const renderedPostElements = value.map(({
-          postTitle, postLink, postId, feedId, show,
-        }) => {
-          if (show) {
-            return renderPosts(postTitle, postLink, postId, feedId);
+        const renderedPostElements = value.map((post) => {
+          if (post.show === true) {
+            return renderPosts(post);
           }
           return null;
         }).filter((val) => val !== null);
-        renderedPostElements.forEach((el) => postItemsContainer.prepend(el));
+        renderedPostElements.map((el) => postItemsContainer.prepend(el));
       } else {
-        const renderedPostElements = value.map(({
-          postTitle, postLink, postId, feedId,
-        }) => renderPosts(postTitle, postLink, postId, feedId));
+        const renderedPostElements = value.map((post) => renderPosts(post));
         renderedPostElements.map((el) => postItemsContainer.prepend(el));
       }
       break;

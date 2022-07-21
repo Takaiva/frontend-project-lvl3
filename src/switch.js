@@ -14,9 +14,5 @@ export default (state, feedElement) => {
         post.show = !post.show;
       }
     });
-    const isAnyActiveFeed = state.posts.some((post) => post.show === id);
-    if (!isAnyActiveFeed) {
-      state.posts.forEach((post) => post.show === null);
-    }
   });
 };

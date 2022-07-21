@@ -15,6 +15,8 @@ export default (data) => new Promise((resolve, reject) => {
         postTitle,
         postDescription,
         postLink,
+        show: null,
+        viewed: false,
       });
       return acc;
     }, []);
