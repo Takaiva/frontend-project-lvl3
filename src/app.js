@@ -6,6 +6,7 @@ import downloadRss from './RSSdownloader.js';
 import parseRss from './RSSparser.js';
 import render from './view.js';
 import updatePosts from './updatePosts.js';
+import makeSwitchable from './switch.js';
 import resources from './locales/index.js';
 
 export default () => {
@@ -100,6 +101,11 @@ export default () => {
               runPostUpdatingProcess();
               state.updatingProcess = 'started';
             }
+
+            // add switching between specified posts
+            const feedElements = document.querySelectorAll('.feeds ul li');
+            const lastAddedFeedElement = feedElements[feedElements.length - 1];
+            makeSwitchable(state, lastAddedFeedElement);
           }).catch((parsingError) => {
           // display error message
             const errorMessage = parsingError.message;

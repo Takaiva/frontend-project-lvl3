@@ -32,6 +32,7 @@ export default (data, url, state) => new Promise((resolve, reject) => {
         postTitle,
         postDescription,
         postLink,
+        show: null,
       });
       return acc;
     }, []);

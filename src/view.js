@@ -32,22 +32,33 @@ export default (elements, i18n) => (path, value, previousValue) => {
       const lastAddedFeedItem = (value[value.length - 1]);
       const { feedTitle, feedDescription } = lastAddedFeedItem;
       const { feedItem } = renderFeed(feedTitle, feedDescription);
-      feedItemsContainer.prepend(feedItem);
+      feedItemsContainer.append(feedItem);
       break;
     }
     case 'posts': {
-      // render last added post items
+      // render post items
       const postItemsContainer = document.querySelector('div.posts ul.list-group');
-      const previouslyAddedPostItems = previousValue;
-      const lengthOfPreviouslyAddedPostItems = previouslyAddedPostItems.length;
-      const allCurrentAddedPostItems = value;
-      const lastAddedPostItems = allCurrentAddedPostItems.slice(lengthOfPreviouslyAddedPostItems);
-      const renderedPostElements = lastAddedPostItems.map(({
-        postTitle, postLink, postId, feedId,
-      }) => renderPosts(postTitle, postLink, postId, feedId)).reverse();
-      renderedPostElements.forEach((el) => postItemsContainer.prepend(el));
+      postItemsContainer.innerHTML = '';
+      const isAnyActiveFeed = value.some((post) => post.show === true);
+      if (isAnyActiveFeed) {
+        const renderedPostElements = value.map(({
+          postTitle, postLink, postId, feedId, show,
+        }) => {
+          if (show) {
+            return renderPosts(postTitle, postLink, postId, feedId);
+          }
+          return null;
+        }).filter((val) => val !== null);
+        renderedPostElements.forEach((el) => postItemsContainer.prepend(el));
+      } else {
+        const renderedPostElements = value.map(({
+          postTitle, postLink, postId, feedId,
+        }) => renderPosts(postTitle, postLink, postId, feedId));
+        renderedPostElements.map((el) => postItemsContainer.prepend(el));
+      }
       break;
     }
+
     case 'modalWindowObject': {
       const modalTitle = modalWindow.querySelector('.modal-title');
       const modalBody = modalWindow.querySelector('.modal-body');
