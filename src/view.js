@@ -125,10 +125,10 @@ export default (elements, i18n) => (path, value, previousValue) => {
           if (currentText === '') {
             return;
           }
-          const previousLng = previousValue;
+          const prevLng = previousValue;
           if (feedback.classList.contains('text-danger')) {
             const correspondingPath = 'form.feedbackStatus.failure';
-            const correspondingLocale = resources[previousLng].translation.form.feedbackStatus.failure;
+            const correspondingLocale = resources[prevLng].translation.form.feedbackStatus.failure;
             const localeKey = Object.keys(correspondingLocale)
               .find((neededKey) => correspondingLocale[neededKey] === currentText);
             el.textContent = i18n.t(`${correspondingPath}.${localeKey}`);
