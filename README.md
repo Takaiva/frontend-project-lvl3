@@ -16,7 +16,7 @@ make install
 
 ## Description
 
-READABLE is an RSS client that allows you to aggregate articles from any resource that provides corresponding rss link. Posts update automatically. Post description preview enabled via modal window.
+READABLE is an RSS client that allows you to aggregate articles from any resource that provides corresponding rss link. Posts update automatically.
 
 Supported languages:
 
@@ -28,3 +28,9 @@ Supported languages:
 Go to https://readable-rss.vercel.app/
 
 Paste the rss link into the input field. Click Submit. Make it READABLE!
+
+Post description preview enabled via modal window. 
+
+You can also switch between different feeds or even pick several feeds at once by clicking on needed ones. This will display only corresponding posts.
+
+At the bottom of the page there are buttons to change interface language.
