@@ -14,13 +14,5 @@ export default (feedTitle, feedDescription) => {
   feedItem.appendChild(title);
   feedItem.appendChild(description);
 
-  /*  feedItem.addEventListener('click', (e) => {
-    const liEl = e.target.closest('li');
-    liEl.classList.toggle('border-0');
-    liEl.classList.toggle('border-end-0');
-    liEl.classList.toggle('border');
-    liEl.classList.toggle('border-success');
-  }); */
-
   return { feedItem };
 };
