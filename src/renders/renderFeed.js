@@ -1,6 +1,6 @@
 export default (feedTitle, feedDescription) => {
   const feedItem = document.createElement('li');
-  feedItem.classList.add('list-group-item', 'border-0', 'border-end-0');
+  feedItem.classList.add('list-group-item', 'border-0', 'border-end-0', 'rounded');
   feedItem.setAttribute('style', 'cursor: pointer');
 
   const title = document.createElement('h3');
@@ -13,6 +13,11 @@ export default (feedTitle, feedDescription) => {
 
   feedItem.appendChild(title);
   feedItem.appendChild(description);
+
+  feedItem.addEventListener('click', (e) => {
+    const el = e.target.closest('li');
+    el.classList.toggle('gradient-green')
+  })
 
   return { feedItem };
 };

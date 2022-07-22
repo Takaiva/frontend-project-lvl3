@@ -45,7 +45,7 @@ img {
 }
 
 .feeds ul li:hover {
-  background: linear-gradient(-45deg, white, rgba(28,145,96,0.22032563025210083), white);
+  background: linear-gradient(-45deg, rgba(28,145,96,0.32032563025210083), rgba(170, 161, 125, 0.32), rgba(28,145,96,0.32032563025210083));
   background-size: 400% 400%;
   animation: gradient 10s ease infinite;
   height: auto;
@@ -60,4 +60,8 @@ img {
       background-position: 0% 50%;
     }
   }
+}
+
+.gradient-green {
+  background: linear-gradient(-45deg, rgba(28,145,96,0.32032563025210083), rgba(170, 161, 125, 0.32), rgba(28,145,96,0.32032563025210083));
 }
