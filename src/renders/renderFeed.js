@@ -16,8 +16,8 @@ export default (feedTitle, feedDescription) => {
 
   feedItem.addEventListener('click', (e) => {
     const el = e.target.closest('li');
-    el.classList.toggle('gradient-green')
-  })
+    el.classList.toggle('bg-gradient-green');
+  });
 
   return { feedItem };
 };
