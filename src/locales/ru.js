@@ -4,25 +4,22 @@ export default {
       submitButton: 'Добавить',
       feedsCardTitle: 'Фиды',
       postsCardTitle: 'Посты',
-      preview: 'Просмотр',
       label: 'Ссылка RSS',
       exampleLink: 'Пример: https://habr.com/ru/rss/hubs/all/',
+      modalButtonPreview: 'Просмотр',
       modalButtonContinueReading: 'Читать полностью',
       modalButtonClose: 'Закрыть',
     },
-    form: {
-      feedbackStatus: {
-        success: 'RSS успешно загружен',
-        failure: {
-          isEmpty: 'Не должно быть пустым',
-          notOneOf: 'RSS уже существует',
-          validationError: 'Ссылка должна быть валидным URL',
-          parsingError: 'Ресурс не содержит валидный RSS',
-          badResponse: 'Сервер вернул ошибку, скорее всего сессия истекла, обновите страницу и повторите попытку',
-          noResponse: 'Ошибка сети',
-          unknownError: 'Неизвестная ошибка. Что-то пошло не так.',
-        },
-      },
+    feedFetchingProcess: {
+      success: 'RSS успешно загружен',
+    },
+    errors: {
+      isEmpty: 'Не должно быть пустым',
+      notOneOf: 'RSS уже существует',
+      validationError: 'Ссылка должна быть валидным URL',
+      parsingError: 'Ресурс не содержит валидный RSS',
+      unknownError: 'Неизвестная ошибка. Что-то пошло не так.',
+      'Network Error': 'Ошибка сети',
     },
   },
 };

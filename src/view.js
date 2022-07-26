@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const renderFeed = (feedTitle, feedDescription) => {
   const feedItem = document.createElement('li');
   feedItem.classList.add('list-group-item', 'border-0', 'border-end-0', 'rounded');
@@ -50,7 +52,6 @@ const renderPosts = (post) => {
   buttonEl.dataset.id = postId;
   buttonEl.dataset.bsToggle = 'modal';
   buttonEl.dataset.bsTarget = '#modal';
-  buttonEl.textContent = 'Просмотр';
 
   postItem.append(linkEl);
   postItem.append(buttonEl);
@@ -73,7 +74,7 @@ const renderPosts = (post) => {
   return postItem;
 };
 
-export default (elements, i18n, state) => (path, value, previousValue) => {
+export default (elements, i18n, state) => (path, value) => {
   const {
     formEl,
     feedback,
@@ -89,19 +90,29 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
 
   switch (path) {
     case 'feedFetchingProcess':
-      // disable interface
-      if (value === 'started') {
-        fieldset.setAttribute('disabled', '');
-      }
-      // enable interface
-      if (value === 'finished') {
-        fieldset.removeAttribute('disabled');
+      switch (value) {
+        case 'awaiting':
+          // enable interface
+          fieldset.removeAttribute('disabled');
+          break;
+        case 'success':
+          // render success feedback message
+          feedback.textContent = i18n.t(`${path}.${value}`);
+          feedback.classList.remove('text-danger');
+          feedback.classList.add('text-success');
+          formEl.reset();
+          input.focus();
+          break;
+        default:
+          // disable interface
+          fieldset.setAttribute('disabled', '');
+          break;
       }
       break;
 
     case 'feeds': {
       // render last added feed item
-      feedsCardTitle.textContent = i18n.t(`userInterface.feedsCardTitle`);
+      feedsCardTitle.textContent = i18n.t('userInterface.feedsCardTitle');
       const lastAddedFeedItem = (value[value.length - 1]);
       const { feedTitle, feedDescription } = lastAddedFeedItem;
       const { feedItem } = renderFeed(feedTitle, feedDescription);
@@ -111,7 +122,7 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
 
     case 'posts': {
       // render post items
-      postsCardTitle.textContent = i18n.t(`userInterface.postsCardTitle`)
+      postsCardTitle.textContent = i18n.t('userInterface.postsCardTitle');
       postsListContainer.innerHTML = '';
       const isAnyActiveFeed = value.some((post) => post.show === true);
       if (isAnyActiveFeed) {
@@ -121,10 +132,18 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
           }
           return null;
         }).filter((val) => val !== null);
-        renderedPostElements.map((el) => postsListContainer.prepend(el));
+        renderedPostElements.forEach((el) => {
+          const modalButtonPreview = el.querySelector('button');
+          modalButtonPreview.textContent = i18n.t('userInterface.modalButtonPreview');
+          postsListContainer.prepend(el);
+        });
       } else {
         const renderedPostElements = value.map((post) => renderPosts(post));
-        renderedPostElements.map((el) => postsListContainer.prepend(el));
+        renderedPostElements.forEach((el) => {
+          const modalButtonPreview = el.querySelector('button');
+          modalButtonPreview.textContent = i18n.t('userInterface.modalButtonPreview');
+          postsListContainer.prepend(el);
+        });
       }
       break;
     }
@@ -147,25 +166,27 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
       break;
     }
 
-    case 'form.feedbackStatus': {
-      // render feedback status message
-      feedback.textContent = i18n.t(`${path}.${value}`);
-      if (value === 'success') {
-        formEl.reset();
-        input.focus();
-      }
+    case 'errors': {
+      // render fail feedback message
+      const errorMessage = _.last(value);
+      feedback.textContent = i18n.t(`${path}.${errorMessage}`);
+      feedback.classList.add('text-danger');
+      feedback.classList.remove('text-success');
       break;
     }
 
     case 'form.isValid': {
-      const actualHighlight = value === true ? 'text-success' : 'text-danger';
-      const previousHighlight = previousValue === true ? 'text-success' : 'text-danger';
-      feedback.classList.remove(previousHighlight);
-      feedback.classList.add(actualHighlight);
-      if (value) {
-        input.classList.remove('is-invalid');
-      } else {
-        input.classList.add('is-invalid');
+      switch (value) {
+        case 'true':
+          // add red input border
+          input.classList.remove('is-invalid');
+          break;
+        case 'false':
+          // remove red input border
+          input.classList.add('is-invalid');
+          break;
+        default:
+          break;
       }
       break;
     }
@@ -175,9 +196,9 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
         submitButton: document.querySelector('button[type="submit"]'),
         feedsCardTitle: document.querySelector('.feeds .card-title'),
         postsCardTitle: document.querySelector('.posts .card-title'),
-        preview: document.querySelectorAll('button[data-bs-toggle="modal"]'),
         label: document.querySelector('label[for="url-input"]'),
         exampleLink: document.querySelector('p.mt-2.mb-0.text-muted'),
+        modalButtonPreview: document.querySelectorAll('button[data-bs-toggle="modal"]'),
         modalButtonContinueReading: document.querySelector('.modal a.full-article'),
         modalButtonClose: document.querySelector('.modal button.btn-secondary'),
         feedback: document.querySelector('p.feedback'),
@@ -185,24 +206,31 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
 
       i18n.changeLanguage(value)
         .then((t) => t('key')).then(() => {
+          // highlight current active language button
           translationButtons.forEach((button) => button.classList.remove('bg-success'));
           const activeTranslationButton = document.querySelector(`button[data-lang=${value}]`);
           activeTranslationButton.classList.add('bg-success');
 
+          // translate interface
           Object.entries(userInterface).forEach(([key, el]) => {
             if (el === null || el.textContent === '') {
               return;
             }
 
             switch (key) {
-              case 'preview': {
+              case 'modalButtonPreview': {
                 el.forEach((previewButton) => {
                   previewButton.textContent = i18n.t(`userInterface.${key}`);
                 });
                 break;
               }
               case 'feedback': {
-                el.textContent = state.form.feedbackStatus === null ? '' : i18n.t(`form.feedbackStatus.${state.form.feedbackStatus}`);
+                if (state.form.isValid) {
+                  el.textContent = i18n.t('feedFetchingProcess.success');
+                } else {
+                  const errorMessage = _.last(state.errors);
+                  el.textContent = errorMessage === undefined ? '' : i18n.t(`errors.${errorMessage}`);
+                }
                 break;
               }
               default: {

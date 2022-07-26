@@ -33,18 +33,17 @@ export default () => {
 
     const initialState = {
       currentLng: defaultLanguage, // en, ru
-      feeds: [],
-      posts: [],
-      feedFetchingProcess: null, // started, finished
+      feedFetchingProcess: 'awaiting', // awaiting, started, success, rejected
       form: {
-        feedbackStatus: null, // success/failure.{error}
         isValid: null, // false, true
       },
+      feeds: [],
+      posts: [],
+      errors: [],
       modalWindowObject: null,
     };
 
     const state = onChange(initialState, render(elements, i18n, initialState));
-
 
     const validateLink = (link) => {
       const links = state.feeds.map((feed) => feed.feedOriginLink);
@@ -106,16 +105,12 @@ export default () => {
             post.viewed = false;
           });
 
-/*          if (state.postsAndFeedsContainersState === 'not rendered') {
-            state.postsAndFeedsContainersState = 'render';
-          }*/
-
           // update info about added feeds and posts in state
           state.posts = (state.posts).concat(posts);
           state.feeds = (state.feeds).concat(feed);
 
           // display success message
-          state.form.feedbackStatus = 'success';
+          state.feedFetchingProcess = 'success';
 
           // update feedback highlighting color and input border color
           state.form.isValid = true;
@@ -126,16 +121,11 @@ export default () => {
           makeSwitchable(state, lastAddedFeedElement);
         })
         .catch((error) => {
-          if (error.response) {
-            state.form.feedbackStatus = 'failure.badResponse';
-          }
-          if (error.request) {
-            state.form.feedbackStatus = 'failure.noResponse';
-          } else {
-            const errorMessage = error.message;
-            state.form.feedbackStatus = `failure.${errorMessage}`;
-          }
+          // display error message
+          state.errors.push(`${error.message}`);
+          // update feedback highlighting color and input border color
           state.form.isValid = false;
+          state.feedFetchingProcess = 'rejected';
         });
     };
 
@@ -144,7 +134,7 @@ export default () => {
       const formData = new FormData(e.target);
       const url = formData.get('url');
       addNewRss1(url).finally(() => {
-        state.feedFetchingProcess = 'finished';
+        state.feedFetchingProcess = 'awaiting';
       });
     });
 

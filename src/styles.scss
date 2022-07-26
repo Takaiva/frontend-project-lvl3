@@ -62,6 +62,26 @@ img {
   }
 }
 
+button[data-bs-toggle="modal"]:hover {
+  color: black;
+  border-color: #0e7563;
+  background: linear-gradient(-45deg, rgba(28,145,96,0.32032563025210083), rgba(170, 161, 125, 0.32), rgba(28,145,96,0.32032563025210083));
+  background-size: 400% 400%;
+  animation: gradient 10s ease infinite;
+  height: auto;
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+}
+
 .bg-gradient-green {
   background: linear-gradient(-45deg, rgba(28,145,96,0.32032563025210083), rgba(170, 161, 125, 0.32), rgba(28,145,96,0.32032563025210083));
 }
