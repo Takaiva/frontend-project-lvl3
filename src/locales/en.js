@@ -20,6 +20,7 @@ export default {
           parsingError: 'Provided resource does not contain valid RSS',
           badResponse: 'Server returned error, most likely the session has expired, please refresh the page and try again',
           noResponse: 'Bad connection or server is not responding',
+          unknownError: 'Unknown error. Something went wrong.',
         },
       },
     },

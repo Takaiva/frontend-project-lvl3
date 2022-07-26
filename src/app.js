@@ -1,12 +1,12 @@
+import _ from 'lodash';
 import * as yup from 'yup';
 import onChange from 'on-change';
+import axios from 'axios';
 
 import i18next from 'i18next';
-import downloadRss from './RSSdownloader.js';
-import parseRss from './RSSparser.js';
 import render from './view.js';
-import updatePosts from './updatePosts.js';
 import makeSwitchable from './switch.js';
+import parseRss from './RSSparser.js';
 import resources from './locales/index.js';
 
 export default () => {
@@ -29,19 +29,33 @@ export default () => {
       translationButtons: document.querySelectorAll('.translation'),
     };
 
-    const state = onChange({
+    const initialState = {
       currentLng: defaultLanguage, // en, ru
       feeds: [],
       posts: [],
-      updatingProcess: null, // started, null
       feedFetchingProcess: null, // started, finished
       postsAndFeedsContainersState: 'not rendered', // not rendered, render
       form: {
         feedbackStatus: null, // success/failure.{error}
-        isValidForm: null, // true/false
+        isValid: null, // false, true
       },
       modalWindowObject: null,
-    }, render(elements, i18n));
+    };
+
+    const state = onChange(initialState, render(elements, i18n, initialState));
+
+    /*    const state = onChange({
+      currentLng: defaultLanguage, // en, ru
+      feeds: [],
+      posts: [],
+      feedFetchingProcess: null, // started, finished
+      postsAndFeedsContainersState: 'not rendered', // not rendered, render
+      form: {
+        feedbackStatus: null, // success/failure.{error}
+        isValid: null, // false, true
+      },
+      modalWindowObject: null,
+    }, render(elements, i18n)); */
 
     const validateLink = (link) => {
       const links = state.feeds.map((feed) => feed.feedOriginLink);
@@ -58,86 +72,91 @@ export default () => {
       return schema.validate(link);
     };
 
-    const runPostUpdatingProcess = () => {
-      const period = 5000;
-      updatePosts(state);
-      setTimeout(() => runPostUpdatingProcess(), period);
+    const downloadRss = (url) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`);
+
+    const updatePosts = () => {
+      const promises = state.feeds.forEach((feed) => {
+        downloadRss(feed.feedOriginLink)
+          .then((response) => {
+            const { posts } = parseRss(response.data.contents);
+            const updatedPosts = posts;
+            const oldPostTitles = state.posts.map((post) => post.postTitle);
+            const allNewPostTitles = updatedPosts.map((post) => post.postTitle);
+            const newPostsTitles = _.differenceWith(allNewPostTitles, oldPostTitles, _.isEqual);
+            newPostsTitles.forEach((title) => {
+              const newPost = updatedPosts.find((post) => post.postTitle === title);
+              newPost.feedId = feed.feedId;
+              newPost.postId = Number(_.uniqueId());
+              newPost.show = null;
+              newPost.viewed = false;
+              state.posts = (state.posts).concat([newPost]);
+            });
+          });
+      });
+      return Promise.all([promises]);
     };
 
-    const startRssSetup = (url) => {
-    // disabling form interface while downloading and setting up the rss
+    const runPostUpdatingProcess = () => {
+      const period = 5000;
+      updatePosts()
+        .then(() => setTimeout(() => runPostUpdatingProcess(), period));
+    };
+
+    const addNewRss1 = (url) => {
       state.feedFetchingProcess = 'started';
-      validateLink(url).then((validatedUrl) => {
-        downloadRss(validatedUrl).then((response) => {
-          parseRss(response.data.contents, url, state).then(({ feed, posts }) => {
-          // when parsing finished successfully, if needed containers are not rendered,
-          // render containers for feed and post items
-            if (state.postsAndFeedsContainersState === 'not rendered') {
-              state.postsAndFeedsContainersState = 'render';
-            }
-
-            // update info about added feeds and posts in state
-            state.posts = (state.posts).concat(posts);
-            state.feeds = (state.feeds).concat(feed);
-
-            // display success message
-            state.form.feedbackStatus = 'success';
-
-            // enable form interface when the rss setting up is finished
-            state.feedFetchingProcess = 'finished';
-
-            // update feedback highlighting color (red or green) depending on the feedback status
-            state.form.isValidForm = !(state.form.feedbackStatus).includes('failure');
-
-            // reset form when rss is downloaded and set up successfully
-            elements.formEl.reset();
-
-            // user-friendly practice
-            elements.input.focus();
-
-            // start updating posts process
-            // using state to not to trigger updating more that one times
-            if (state.updatingProcess !== 'started') {
-              runPostUpdatingProcess();
-              state.updatingProcess = 'started';
-            }
-
-            // add switching between specified posts
-            const feedElements = document.querySelectorAll('.feeds ul li');
-            const lastAddedFeedElement = feedElements[feedElements.length - 1];
-            makeSwitchable(state, lastAddedFeedElement);
-          }).catch((parsingError) => {
-          // display error message
-            const errorMessage = parsingError.message;
-            state.form.feedbackStatus = `failure.${errorMessage}`;
-            state.form.isValidForm = !(state.form.feedbackStatus).includes('failure');
-            state.feedFetchingProcess = 'finished';
+      return validateLink(url)
+        .then((validatedUrl) => downloadRss(validatedUrl))
+        .then((response) => {
+          const { feed, posts } = parseRss(response.data.contents, url);
+          const feedId = Number(_.uniqueId());
+          feed.feedId = feedId;
+          posts.forEach((post) => {
+            post.feedId = feedId;
+            post.postId = Number(_.uniqueId());
+            post.show = null;
+            post.viewed = false;
           });
-        }).catch((networkError) => {
-        // display error message
-          if (networkError.response) {
+
+          if (state.postsAndFeedsContainersState === 'not rendered') {
+            state.postsAndFeedsContainersState = 'render';
+          }
+
+          // update info about added feeds and posts in state
+          state.posts = (state.posts).concat(posts);
+          state.feeds = (state.feeds).concat(feed);
+
+          // display success message
+          state.form.feedbackStatus = 'success';
+
+          // update feedback highlighting color and input border color
+          state.form.isValid = true;
+
+          // add switching between specified posts
+          const feedElements = document.querySelectorAll('.feeds ul li');
+          const lastAddedFeedElement = feedElements[feedElements.length - 1];
+          makeSwitchable(state, lastAddedFeedElement);
+        })
+        .catch((error) => {
+          if (error.response) {
             state.form.feedbackStatus = 'failure.badResponse';
           }
-          if (networkError.request) {
+          if (error.request) {
             state.form.feedbackStatus = 'failure.noResponse';
+          } else {
+            const errorMessage = error.message;
+            state.form.feedbackStatus = `failure.${errorMessage}`;
           }
-          state.form.isValidForm = !(state.form.feedbackStatus).includes('failure');
-          state.feedFetchingProcess = 'finished';
+          state.form.isValid = false;
         });
-      }).catch((validationError) => {
-      // display error message
-        const errorMessage = validationError.message;
-        state.form.feedbackStatus = `failure.${errorMessage}`;
-        state.form.isValidForm = !(state.form.feedbackStatus).includes('failure');
-        state.feedFetchingProcess = 'finished';
-      });
     };
 
     elements.formEl.addEventListener('submit', (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
       const url = formData.get('url');
-      startRssSetup(url);
+      addNewRss1(url).finally(() => {
+        state.feedFetchingProcess = 'finished';
+      });
     });
 
     elements.modalWindow.addEventListener('show.bs.modal', (e) => {
@@ -153,5 +172,6 @@ export default () => {
       const targetButton = e.target;
       state.currentLng = targetButton.dataset.lang;
     }));
+    runPostUpdatingProcess();
   });
 };
