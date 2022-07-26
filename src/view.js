@@ -126,10 +126,9 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
       // enable interface
       if (value === 'finished') {
         fieldset.removeAttribute('disabled');
-        formEl.reset();
-        input.focus();
       }
       break;
+
     case 'postsAndFeedsContainersState':
       if (value === 'render') {
         // when the first rss successfully downloaded,
@@ -137,6 +136,7 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
         renderPostsAndFeedsContainers(feedsContainer, postsContainer);
       }
       break;
+
     case 'feeds': {
       // render last added feed item
       const feedItemsContainer = document.querySelector('div.feeds ul.list-group');
@@ -146,6 +146,7 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
       feedItemsContainer.append(feedItem);
       break;
     }
+
     case 'posts': {
       // render post items
       const postItemsContainer = document.querySelector('div.posts ul.list-group');
@@ -183,9 +184,14 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
       linkToOriginal.href = postLink;
       break;
     }
+
     case 'form.feedbackStatus': {
       // render feedback status message
       feedback.textContent = i18n.t(`${path}.${value}`);
+      if (value === 'success') {
+        formEl.reset();
+        input.focus();
+      }
       break;
     }
 
@@ -201,6 +207,7 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
       }
       break;
     }
+
     case 'currentLng': {
       const userInterface = {
         submitButton: document.querySelector('button[type="submit"]'),
