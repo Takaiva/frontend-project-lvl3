@@ -107,7 +107,14 @@ const renderPosts = (post) => {
 
 export default (elements, i18n, state) => (path, value, previousValue) => {
   const {
-    formEl, feedback, input, fieldset, feedsContainer, postsContainer, modalWindow, translationButtons,
+    formEl,
+    feedback,
+    input,
+    fieldset,
+    feedsContainer,
+    postsContainer,
+    modalWindow,
+    translationButtons,
   } = elements;
 
   switch (path) {
