@@ -23,8 +23,10 @@ export default () => {
       input: document.getElementById('url-input'),
       button: document.querySelector('form button'),
       feedback: document.querySelector('p.feedback'),
-      feedsContainer: document.querySelector('div.feeds'),
-      postsContainer: document.querySelector('div.posts'),
+      feedsListContainer: document.querySelector('div.feeds ul.list-group'),
+      postsListContainer: document.querySelector('div.posts ul.list-group'),
+      feedsCardTitle: document.querySelector('.feeds .card-title'),
+      postsCardTitle: document.querySelector('.posts .card-title'),
       modalWindow: document.getElementById('modal'),
       translationButtons: document.querySelectorAll('.translation'),
     };
@@ -34,7 +36,6 @@ export default () => {
       feeds: [],
       posts: [],
       feedFetchingProcess: null, // started, finished
-      postsAndFeedsContainersState: 'not rendered', // not rendered, render
       form: {
         feedbackStatus: null, // success/failure.{error}
         isValid: null, // false, true
@@ -44,18 +45,6 @@ export default () => {
 
     const state = onChange(initialState, render(elements, i18n, initialState));
 
-    /*    const state = onChange({
-      currentLng: defaultLanguage, // en, ru
-      feeds: [],
-      posts: [],
-      feedFetchingProcess: null, // started, finished
-      postsAndFeedsContainersState: 'not rendered', // not rendered, render
-      form: {
-        feedbackStatus: null, // success/failure.{error}
-        isValid: null, // false, true
-      },
-      modalWindowObject: null,
-    }, render(elements, i18n)); */
 
     const validateLink = (link) => {
       const links = state.feeds.map((feed) => feed.feedOriginLink);
@@ -117,9 +106,9 @@ export default () => {
             post.viewed = false;
           });
 
-          if (state.postsAndFeedsContainersState === 'not rendered') {
+/*          if (state.postsAndFeedsContainersState === 'not rendered') {
             state.postsAndFeedsContainersState = 'render';
-          }
+          }*/
 
           // update info about added feeds and posts in state
           state.posts = (state.posts).concat(posts);

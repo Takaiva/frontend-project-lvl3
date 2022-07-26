@@ -1,35 +1,3 @@
-const renderPostsAndFeedsContainers = (feedsContainer, postsContainer) => {
-  const feedsCont = feedsContainer;
-  const feedBorder = document.createElement('div');
-  feedBorder.classList.add('card', 'border-0');
-
-  const feedCardBody = document.createElement('div');
-  feedCardBody.classList.add('card-body');
-  feedCardBody.innerHTML = '<h2 class="card-title h4">Фиды</h2>';
-  feedBorder.appendChild(feedCardBody);
-
-  const feedList = document.createElement('ul');
-  feedList.classList.add('list-group', 'border-0', 'rounded-0');
-  feedBorder.appendChild(feedList);
-
-  feedsCont.appendChild(feedBorder);
-
-  const postsCont = postsContainer;
-  const postsBorder = document.createElement('div');
-  postsBorder.classList.add('card', 'border-0');
-
-  const postsCardBody = document.createElement('div');
-  postsCardBody.classList.add('card-body');
-  postsCardBody.innerHTML = '<h2 class="card-title h4">Посты</h2>';
-  postsBorder.appendChild(postsCardBody);
-
-  const postsList = document.createElement('ul');
-  postsList.classList.add('list-group', 'border-0', 'rounded-0');
-  postsBorder.appendChild(postsList);
-
-  postsCont.appendChild(postsBorder);
-};
-
 const renderFeed = (feedTitle, feedDescription) => {
   const feedItem = document.createElement('li');
   feedItem.classList.add('list-group-item', 'border-0', 'border-end-0', 'rounded');
@@ -111,8 +79,10 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
     feedback,
     input,
     fieldset,
-    feedsContainer,
-    postsContainer,
+    feedsListContainer,
+    feedsCardTitle,
+    postsListContainer,
+    postsCardTitle,
     modalWindow,
     translationButtons,
   } = elements;
@@ -129,28 +99,20 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
       }
       break;
 
-    case 'postsAndFeedsContainersState':
-      if (value === 'render') {
-        // when the first rss successfully downloaded,
-        // render templates for feeds and posts containers
-        renderPostsAndFeedsContainers(feedsContainer, postsContainer);
-      }
-      break;
-
     case 'feeds': {
       // render last added feed item
-      const feedItemsContainer = document.querySelector('div.feeds ul.list-group');
+      feedsCardTitle.textContent = i18n.t(`userInterface.feedsCardTitle`);
       const lastAddedFeedItem = (value[value.length - 1]);
       const { feedTitle, feedDescription } = lastAddedFeedItem;
       const { feedItem } = renderFeed(feedTitle, feedDescription);
-      feedItemsContainer.append(feedItem);
+      feedsListContainer.append(feedItem);
       break;
     }
 
     case 'posts': {
       // render post items
-      const postItemsContainer = document.querySelector('div.posts ul.list-group');
-      postItemsContainer.innerHTML = '';
+      postsCardTitle.textContent = i18n.t(`userInterface.postsCardTitle`)
+      postsListContainer.innerHTML = '';
       const isAnyActiveFeed = value.some((post) => post.show === true);
       if (isAnyActiveFeed) {
         const renderedPostElements = value.map((post) => {
@@ -159,10 +121,10 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
           }
           return null;
         }).filter((val) => val !== null);
-        renderedPostElements.map((el) => postItemsContainer.prepend(el));
+        renderedPostElements.map((el) => postsListContainer.prepend(el));
       } else {
         const renderedPostElements = value.map((post) => renderPosts(post));
-        renderedPostElements.map((el) => postItemsContainer.prepend(el));
+        renderedPostElements.map((el) => postsListContainer.prepend(el));
       }
       break;
     }
@@ -211,8 +173,8 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
     case 'currentLng': {
       const userInterface = {
         submitButton: document.querySelector('button[type="submit"]'),
-        feeds: document.querySelector('.feeds .card-title'),
-        posts: document.querySelector('.posts .card-title'),
+        feedsCardTitle: document.querySelector('.feeds .card-title'),
+        postsCardTitle: document.querySelector('.posts .card-title'),
         preview: document.querySelectorAll('button[data-bs-toggle="modal"]'),
         label: document.querySelector('label[for="url-input"]'),
         exampleLink: document.querySelector('p.mt-2.mb-0.text-muted'),
@@ -228,7 +190,7 @@ export default (elements, i18n, state) => (path, value, previousValue) => {
           activeTranslationButton.classList.add('bg-success');
 
           Object.entries(userInterface).forEach(([key, el]) => {
-            if (el === null) {
+            if (el === null || el.textContent === '') {
               return;
             }
 

@@ -2,8 +2,8 @@ export default {
   translation: {
     userInterface: {
       submitButton: 'Submit',
-      feeds: 'Feeds',
-      posts: 'Posts',
+      feedsCardTitle: 'Feeds',
+      postsCardTitle: 'Posts',
       preview: 'Preview',
       label: 'RSS link',
       exampleLink: 'Example: https://habr.com/ru/rss/hubs/all/',
