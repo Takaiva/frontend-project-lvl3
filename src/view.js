@@ -1,79 +1,5 @@
 import _ from 'lodash';
 
-const renderFeed = (feedTitle, feedDescription) => {
-  const feedItem = document.createElement('li');
-  feedItem.classList.add('list-group-item', 'border-0', 'border-end-0', 'rounded');
-  feedItem.setAttribute('style', 'cursor: pointer');
-
-  const title = document.createElement('h3');
-  title.classList.add('h6', 'm-0');
-  title.textContent = feedTitle;
-
-  const description = document.createElement('p');
-  description.classList.add('m-0', 'small', 'text-black-50');
-  description.textContent = feedDescription;
-
-  feedItem.appendChild(title);
-  feedItem.appendChild(description);
-
-  feedItem.addEventListener('click', (e) => {
-    const el = e.target.closest('li');
-    el.classList.toggle('bg-gradient-green');
-    el.classList.toggle('border-0');
-    el.classList.toggle('border-end-0');
-    el.classList.toggle('border');
-    el.classList.toggle('border-success');
-  });
-
-  return { feedItem };
-};
-
-const renderPosts = (post) => {
-  const {
-    postTitle, postLink, postId, viewed,
-  } = post;
-  const postItem = document.createElement('li');
-  postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
-
-  const linkEl = document.createElement('a');
-  linkEl.href = postLink;
-  linkEl.textContent = postTitle;
-  linkEl.dataset.id = postId;
-  if (viewed === true) {
-    linkEl.classList.add('fw-normal', 'link-secondary');
-  } else {
-    linkEl.classList.add('fw-bold');
-  }
-  linkEl.setAttribute('target', '_blank');
-  linkEl.setAttribute('rel', 'noopener noreferrer');
-
-  const buttonEl = document.createElement('button');
-  buttonEl.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-  buttonEl.dataset.id = postId;
-  buttonEl.dataset.bsToggle = 'modal';
-  buttonEl.dataset.bsTarget = '#modal';
-
-  postItem.append(linkEl);
-  postItem.append(buttonEl);
-
-  postItem.querySelector(`a[data-id="${postId}"]`).addEventListener('click', (e) => {
-    const el = e.target;
-    el.classList.remove('fw-bold');
-    el.classList.add('fw-normal', 'link-secondary');
-    post.viewed = true;
-  });
-
-  postItem.querySelector(`button[data-id="${postId}"]`).addEventListener('click', (e) => {
-    const el = e.target;
-    const { id } = el.dataset;
-    const linkElement = postItem.querySelector(`a[data-id="${id}"]`);
-    linkElement.classList.remove('fw-bold');
-    linkElement.classList.add('fw-normal', 'link-secondary');
-    post.viewed = true;
-  });
-  return postItem;
-};
-
 export default (elements, i18n, state) => (path, value) => {
   const {
     formEl,
@@ -87,6 +13,65 @@ export default (elements, i18n, state) => (path, value) => {
     modalWindow,
     translationButtons,
   } = elements;
+
+  const renderFeed = (feedTitle, feedDescription, active) => {
+    const feedItem = document.createElement('li');
+    feedItem.classList.add('list-group-item', 'rounded');
+    feedItem.setAttribute('style', 'cursor: pointer');
+
+    const title = document.createElement('h3');
+    title.classList.add('h6', 'm-0');
+    title.textContent = feedTitle;
+
+    const description = document.createElement('p');
+    description.classList.add('m-0', 'small', 'text-black-50');
+    description.textContent = feedDescription;
+
+    feedItem.appendChild(title);
+    feedItem.appendChild(description);
+
+    if (active) {
+      feedItem.classList.add('bg-gradient-green');
+      feedItem.classList.add('border');
+      feedItem.classList.add('border-success');
+    } else {
+      feedItem.classList.add('border-0');
+      feedItem.classList.add('border-end-0');
+    }
+
+    return feedItem;
+  };
+
+  const renderPosts = (post) => {
+    const {
+      postTitle, postLink, postId,
+    } = post;
+    const postItem = document.createElement('li');
+    postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+
+    const linkEl = document.createElement('a');
+    linkEl.href = postLink;
+    linkEl.textContent = postTitle;
+    linkEl.dataset.id = postId;
+    if (post.viewed) {
+      linkEl.classList.add('fw-normal', 'text-secondary');
+    } else {
+      linkEl.classList.add('fw-bold');
+    }
+    linkEl.setAttribute('target', '_blank');
+    linkEl.setAttribute('rel', 'noopener noreferrer');
+
+    const buttonEl = document.createElement('button');
+    buttonEl.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+    buttonEl.dataset.id = postId;
+    buttonEl.dataset.bsToggle = 'modal';
+    buttonEl.dataset.bsTarget = '#modal';
+
+    postItem.append(linkEl);
+    postItem.append(buttonEl);
+
+    return postItem;
+  };
 
   switch (path) {
     case 'feedFetchingProcess':
@@ -112,22 +97,24 @@ export default (elements, i18n, state) => (path, value) => {
 
     case 'feeds': {
       // render last added feed item
+      feedsListContainer.innerHTML = '';
       feedsCardTitle.textContent = i18n.t('userInterface.feedsCardTitle');
-      const lastAddedFeedItem = (value[value.length - 1]);
-      const { feedTitle, feedDescription } = lastAddedFeedItem;
-      const { feedItem } = renderFeed(feedTitle, feedDescription);
-      feedsListContainer.append(feedItem);
+      value.forEach(({ feedTitle, feedDescription, active }) => {
+        const feedEl = renderFeed(feedTitle, feedDescription, active);
+        feedsListContainer.append(feedEl);
+      });
       break;
     }
 
     case 'posts': {
       // render post items
-      postsCardTitle.textContent = i18n.t('userInterface.postsCardTitle');
       postsListContainer.innerHTML = '';
+      postsCardTitle.textContent = i18n.t('userInterface.postsCardTitle');
       const isAnyActiveFeed = value.some((post) => post.show === true);
       if (isAnyActiveFeed) {
+        // show specified posts
         const renderedPostElements = value.map((post) => {
-          if (post.show === true) {
+          if (post.show) {
             return renderPosts(post);
           }
           return null;
@@ -138,6 +125,7 @@ export default (elements, i18n, state) => (path, value) => {
           postsListContainer.prepend(el);
         });
       } else {
+        // show all posts
         const renderedPostElements = value.map((post) => renderPosts(post));
         renderedPostElements.forEach((el) => {
           const modalButtonPreview = el.querySelector('button');
@@ -178,11 +166,11 @@ export default (elements, i18n, state) => (path, value) => {
     case 'form.isValid': {
       switch (value) {
         case 'true':
-          // add red input border
+          // remove red input border
           input.classList.remove('is-invalid');
           break;
         case 'false':
-          // remove red input border
+          // add red input border
           input.classList.add('is-invalid');
           break;
         default:

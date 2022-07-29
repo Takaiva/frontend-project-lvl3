@@ -5,7 +5,6 @@ import axios from 'axios';
 
 import i18next from 'i18next';
 import render from './view.js';
-import makeSwitchable from './switch.js';
 import parseRss from './RSSparser.js';
 import resources from './locales/index.js';
 
@@ -15,7 +14,7 @@ export default () => {
     lng: 'ru',
     debug: false,
     resources,
-  }).then((t) => { t('key'); }).then(() => {
+  }).then(() => {
     const defaultLanguage = 'ru';
     const elements = {
       formEl: document.querySelector('form'),
@@ -45,52 +44,48 @@ export default () => {
 
     const state = onChange(initialState, render(elements, i18n, initialState));
 
+    // downloader
+    const downloadRss = (url) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`);
+    // validator
     const validateLink = (link) => {
       const links = state.feeds.map((feed) => feed.feedOriginLink);
-      yup.setLocale({
-        mixed: {
-          notOneOf: 'notOneOf',
-        },
-        string: {
-          url: 'validationError',
-          min: 'isEmpty',
-        },
-      });
       const schema = yup.string().url().min(1).notOneOf(links);
       return schema.validate(link);
     };
-
-    const downloadRss = (url) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`);
-
-    const updatePosts = () => {
-      const promises = state.feeds.forEach((feed) => {
-        downloadRss(feed.feedOriginLink)
-          .then((response) => {
-            const { posts } = parseRss(response.data.contents);
-            const updatedPosts = posts;
-            const oldPostTitles = state.posts.map((post) => post.postTitle);
-            const allNewPostTitles = updatedPosts.map((post) => post.postTitle);
-            const newPostsTitles = _.differenceWith(allNewPostTitles, oldPostTitles, _.isEqual);
-            newPostsTitles.forEach((title) => {
-              const newPost = updatedPosts.find((post) => post.postTitle === title);
-              newPost.feedId = feed.feedId;
-              newPost.postId = Number(_.uniqueId());
-              newPost.show = null;
-              newPost.viewed = false;
-              state.posts = (state.posts).concat([newPost]);
-            });
-          });
-      });
-      return Promise.all([promises]);
-    };
-
+    // set custom errors
+    yup.setLocale({
+      mixed: {
+        notOneOf: 'notOneOf',
+      },
+      string: {
+        url: 'validationError',
+        min: 'isEmpty',
+      },
+    });
+    // updater
     const runPostUpdatingProcess = () => {
       const period = 5000;
-      updatePosts()
+      const promises = state.feeds.map((feed) => downloadRss(feed.feedOriginLink)
+        .then((response) => {
+          const { posts } = parseRss(response.data.contents);
+          const updatedPosts = posts;
+          const oldPostTitles = state.posts.map((post) => post.postTitle);
+          const allNewPostTitles = updatedPosts.map((post) => post.postTitle);
+          const newPostsTitles = _.differenceWith(allNewPostTitles, oldPostTitles, _.isEqual);
+          newPostsTitles.forEach((title) => {
+            const newPost = updatedPosts.find((post) => post.postTitle === title);
+            newPost.feedId = feed.feedId;
+            newPost.postId = Number(_.uniqueId());
+            newPost.show = null;
+            newPost.viewed = false;
+            state.posts = (state.posts).concat([newPost]);
+          });
+        }));
+      Promise.all([promises])
         .then(() => setTimeout(() => runPostUpdatingProcess(), period));
     };
 
-    const addNewRss1 = (url) => {
+    const addNewRss = (url) => {
       state.feedFetchingProcess = 'started';
       return validateLink(url)
         .then((validatedUrl) => downloadRss(validatedUrl))
@@ -98,6 +93,7 @@ export default () => {
           const { feed, posts } = parseRss(response.data.contents, url);
           const feedId = Number(_.uniqueId());
           feed.feedId = feedId;
+          feed.active = null;
           posts.forEach((post) => {
             post.feedId = feedId;
             post.postId = Number(_.uniqueId());
@@ -105,25 +101,15 @@ export default () => {
             post.viewed = false;
           });
 
-          // update info about added feeds and posts in state
           state.posts = (state.posts).concat(posts);
           state.feeds = (state.feeds).concat(feed);
 
-          // display success message
           state.feedFetchingProcess = 'success';
 
-          // update feedback highlighting color and input border color
           state.form.isValid = true;
-
-          // add switching between specified posts
-          const feedElements = document.querySelectorAll('.feeds ul li');
-          const lastAddedFeedElement = feedElements[feedElements.length - 1];
-          makeSwitchable(state, lastAddedFeedElement);
         })
         .catch((error) => {
-          // display error message
           state.errors.push(`${error.message}`);
-          // update feedback highlighting color and input border color
           state.form.isValid = false;
           state.feedFetchingProcess = 'rejected';
         });
@@ -133,24 +119,57 @@ export default () => {
       e.preventDefault();
       const formData = new FormData(e.target);
       const url = formData.get('url');
-      addNewRss1(url).finally(() => {
+      addNewRss(url).finally(() => {
         state.feedFetchingProcess = 'awaiting';
       });
+    });
+
+    elements.postsListContainer.addEventListener('click', (e) => {
+      const { target } = e;
+      const link = target.closest('a');
+      if (link === target) {
+        const id = Number(link.dataset.id);
+        state.posts.forEach((post) => {
+          if (post.postId === id) {
+            post.viewed = true;
+          }
+        });
+      }
     });
 
     elements.modalWindow.addEventListener('show.bs.modal', (e) => {
       const button = e.relatedTarget;
       const neededPostId = Number(button.dataset.id);
-      const neededPost = (state.posts).find((post) => post.postId === neededPostId);
-      neededPost.viewed = true;
-      state.modalWindowObject = neededPost;
+      state.posts.forEach((post) => {
+        if (post.postId === neededPostId) {
+          post.viewed = true;
+        }
+      });
+      state.modalWindowObject = (state.posts).find((post) => post.postId === neededPostId);
     });
 
-    // translate interface into ru or en
     elements.translationButtons.forEach((button) => button.addEventListener('click', (e) => {
       const targetButton = e.target;
       state.currentLng = targetButton.dataset.lang;
     }));
+    // make feeds switchable
+    elements.feedsListContainer.addEventListener('click', (e) => {
+      const liEl = e.target.closest('li');
+      const title = liEl.querySelector('h3');
+      const titleText = title.textContent;
+      const correspondingFeed = (state.feeds).find((feedItem) => feedItem.feedTitle === titleText);
+      const id = correspondingFeed.feedId;
+      state.posts.forEach((post) => {
+        if (post.feedId === id) {
+          post.show = !post.show;
+        }
+      });
+      state.feeds.forEach((feed) => {
+        if (feed.feedId === id) {
+          feed.active = !feed.active;
+        }
+      });
+    });
     runPostUpdatingProcess();
   });
 };
