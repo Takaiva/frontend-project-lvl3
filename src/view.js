@@ -14,7 +14,8 @@ export default (elements, i18n, state) => (path, value) => {
     translationButtons,
   } = elements;
 
-  const renderFeed = (feedTitle, feedDescription, active) => {
+  const renderFeed = (feed) => {
+    const { feedTitle, feedDescription, active } = feed;
     const feedItem = document.createElement('li');
     feedItem.classList.add('list-group-item', 'rounded');
     feedItem.setAttribute('style', 'cursor: pointer');
@@ -99,10 +100,7 @@ export default (elements, i18n, state) => (path, value) => {
       // render last added feed item
       feedsListContainer.innerHTML = '';
       feedsCardTitle.textContent = i18n.t('userInterface.feedsCardTitle');
-      value.forEach(({ feedTitle, feedDescription, active }) => {
-        const feedEl = renderFeed(feedTitle, feedDescription, active);
-        feedsListContainer.append(feedEl);
-      });
+      value.forEach((feed) => feedsListContainer.append(renderFeed(feed)));
       break;
     }
 
