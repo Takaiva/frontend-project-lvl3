@@ -1,5 +1,65 @@
 import _ from 'lodash';
 
+const renderFeed = (feed) => {
+  const { feedTitle, feedDescription, active } = feed;
+  const feedItem = document.createElement('li');
+  feedItem.classList.add('list-group-item', 'rounded');
+  feedItem.setAttribute('style', 'cursor: pointer');
+
+  const title = document.createElement('h3');
+  title.classList.add('h6', 'm-0');
+  title.textContent = feedTitle;
+
+  const description = document.createElement('p');
+  description.classList.add('m-0', 'small', 'text-black-50');
+  description.textContent = feedDescription;
+
+  feedItem.appendChild(title);
+  feedItem.appendChild(description);
+
+  if (active) {
+    feedItem.classList.add('bg-gradient-green');
+    feedItem.classList.add('border');
+    feedItem.classList.add('border-success');
+  } else {
+    feedItem.classList.add('border-0');
+    feedItem.classList.add('border-end-0');
+  }
+
+  return feedItem;
+};
+
+const renderPosts = (post) => {
+  const {
+    postTitle, postLink, postId,
+  } = post;
+  const postItem = document.createElement('li');
+  postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+
+  const linkEl = document.createElement('a');
+  linkEl.href = postLink;
+  linkEl.textContent = postTitle;
+  linkEl.dataset.id = postId;
+  if (post.viewed) {
+    linkEl.classList.add('fw-normal', 'text-secondary');
+  } else {
+    linkEl.classList.add('fw-bold');
+  }
+  linkEl.setAttribute('target', '_blank');
+  linkEl.setAttribute('rel', 'noopener noreferrer');
+
+  const buttonEl = document.createElement('button');
+  buttonEl.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+  buttonEl.dataset.id = postId;
+  buttonEl.dataset.bsToggle = 'modal';
+  buttonEl.dataset.bsTarget = '#modal';
+
+  postItem.append(linkEl);
+  postItem.append(buttonEl);
+
+  return postItem;
+};
+
 export default (elements, i18n, state) => (path, value) => {
   const {
     formEl,
@@ -13,66 +73,6 @@ export default (elements, i18n, state) => (path, value) => {
     modalWindow,
     translationButtons,
   } = elements;
-
-  const renderFeed = (feed) => {
-    const { feedTitle, feedDescription, active } = feed;
-    const feedItem = document.createElement('li');
-    feedItem.classList.add('list-group-item', 'rounded');
-    feedItem.setAttribute('style', 'cursor: pointer');
-
-    const title = document.createElement('h3');
-    title.classList.add('h6', 'm-0');
-    title.textContent = feedTitle;
-
-    const description = document.createElement('p');
-    description.classList.add('m-0', 'small', 'text-black-50');
-    description.textContent = feedDescription;
-
-    feedItem.appendChild(title);
-    feedItem.appendChild(description);
-
-    if (active) {
-      feedItem.classList.add('bg-gradient-green');
-      feedItem.classList.add('border');
-      feedItem.classList.add('border-success');
-    } else {
-      feedItem.classList.add('border-0');
-      feedItem.classList.add('border-end-0');
-    }
-
-    return feedItem;
-  };
-
-  const renderPosts = (post) => {
-    const {
-      postTitle, postLink, postId,
-    } = post;
-    const postItem = document.createElement('li');
-    postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
-
-    const linkEl = document.createElement('a');
-    linkEl.href = postLink;
-    linkEl.textContent = postTitle;
-    linkEl.dataset.id = postId;
-    if (post.viewed) {
-      linkEl.classList.add('fw-normal', 'text-secondary');
-    } else {
-      linkEl.classList.add('fw-bold');
-    }
-    linkEl.setAttribute('target', '_blank');
-    linkEl.setAttribute('rel', 'noopener noreferrer');
-
-    const buttonEl = document.createElement('button');
-    buttonEl.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-    buttonEl.dataset.id = postId;
-    buttonEl.dataset.bsToggle = 'modal';
-    buttonEl.dataset.bsTarget = '#modal';
-
-    postItem.append(linkEl);
-    postItem.append(buttonEl);
-
-    return postItem;
-  };
 
   switch (path) {
     case 'feedFetchingProcess':
