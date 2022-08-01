@@ -52,7 +52,7 @@ export default () => {
       const schema = yup.string().url().min(1).notOneOf(links);
       return schema.validate(link);
     };
-    // set custom errors
+    // set custom validation errors
     yup.setLocale({
       mixed: {
         notOneOf: 'notOneOf',

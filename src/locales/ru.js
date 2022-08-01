@@ -18,7 +18,6 @@ export default {
       notOneOf: 'RSS уже существует',
       validationError: 'Ссылка должна быть валидным URL',
       parsingError: 'Ресурс не содержит валидный RSS',
-      unknownError: 'Неизвестная ошибка. Что-то пошло не так.',
       'Network Error': 'Ошибка сети',
     },
   },

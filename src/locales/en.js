@@ -18,7 +18,6 @@ export default {
       notOneOf: 'Provided RSS already exists',
       validationError: 'Invalid URL',
       parsingError: 'Provided resource does not contain valid RSS',
-      unknownError: 'Unknown error. Something went wrong.',
       'Network Error': 'Bad connection or server is not responding',
     },
   },
