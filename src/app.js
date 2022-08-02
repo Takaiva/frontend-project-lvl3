@@ -116,8 +116,9 @@ export default () => {
             });
             return acc;
           }, []);
+          const uiFeed = { feedId, displaySeparately: false };
           // store uiStates of feeds and posts
-          state.uiState.feeds = (state.uiState.feeds).concat({ feedId, displaySeparately: false });
+          state.uiState.feeds = (state.uiState.feeds).concat(uiFeed);
           state.uiState.posts = (state.uiState.posts).concat(uiPosts);
 
           state.feedFetchingProcess = 'success';

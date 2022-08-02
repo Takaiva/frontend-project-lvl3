@@ -138,19 +138,19 @@ export default (elements, i18n, state) => (path, value) => {
         state.uiState.posts.forEach(({ postId, viewed, show }) => {
           if (show) {
             const neededPost = state.posts.find((post) => post.postId === postId);
-            const renderedPost = renderPosts(neededPost, viewed);
-            const modalButtonPreview = renderedPost.querySelector('button');
+            const renderedPostElement = renderPosts(neededPost, viewed);
+            const modalButtonPreview = renderedPostElement.querySelector('button');
             modalButtonPreview.textContent = i18n.t('userInterface.modalButtonPreview');
-            postsListContainer.prepend(renderedPost);
+            postsListContainer.prepend(renderedPostElement);
           }
         });
       } else {
         value.forEach(({ postId, viewed }) => {
           const neededPost = state.posts.find((post) => post.postId === postId);
-          const renderedPost = renderPosts(neededPost, viewed);
-          const modalButtonPreview = renderedPost.querySelector('button');
+          const renderedPostElement = renderPosts(neededPost, viewed);
+          const modalButtonPreview = renderedPostElement.querySelector('button');
           modalButtonPreview.textContent = i18n.t('userInterface.modalButtonPreview');
-          postsListContainer.prepend(renderedPost);
+          postsListContainer.prepend(renderedPostElement);
         });
       }
       break;
