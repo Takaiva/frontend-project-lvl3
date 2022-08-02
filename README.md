@@ -16,7 +16,7 @@ make install
 
 ## Description
 
-READABLE is an RSS client that allows you to aggregate articles from any resource that provides corresponding rss link. Posts update automatically.
+READABLE is an RSS client that allows you to aggregate articles from any resource that provides corresponding rss link.
 
 Supported languages:
 
@@ -32,5 +32,7 @@ Paste the rss link into the input field. Click Submit. Make it READABLE!
 Post description preview enabled via modal window. 
 
 You can also switch between different feeds or even pick several feeds at once by clicking on needed ones. This will display only corresponding posts.
+
+Posts update automatically in real time. If there is any active feed (you should click on a feed to make it active), there will be real-time post updating relating only to these feeds.
 
 At the bottom of the page there are buttons to change interface language.
