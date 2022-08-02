@@ -81,7 +81,8 @@ export default () => {
             newPost.feedId = feed.feedId;
             newPost.postId = Number(_.uniqueId());
             state.posts = (state.posts).concat([newPost]);
-            const { displaySeparately } = state.uiState.feeds.find((uiFeed) => uiFeed.feedId === newPost.feedId);
+            const { displaySeparately } = state.uiState.feeds
+              .find((uiFeed) => uiFeed.feedId === newPost.feedId);
             state.uiState.posts.push({
               feedId: newPost.feedId,
               postId: newPost.postId,

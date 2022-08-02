@@ -133,7 +133,8 @@ export default (elements, i18n, state) => (path, value) => {
 
     case 'uiState.posts': {
       postsListContainer.innerHTML = '';
-      const isAnyActiveFeed = state.uiState.feeds.some((uiFeed) => uiFeed.displaySeparately === true);
+      const isAnyActiveFeed = state.uiState.feeds
+        .some((uiFeed) => uiFeed.displaySeparately === true);
       if (isAnyActiveFeed) {
         state.uiState.posts.forEach(({ postId, viewed, show }) => {
           if (show) {
