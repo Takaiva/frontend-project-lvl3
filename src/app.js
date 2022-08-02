@@ -37,6 +37,10 @@ export default () => {
         isValid: null, // false, true
       },
       feeds: [],
+      uiState: {
+        feeds: [], // {feedId: '', displaySeparately: true/false}
+        posts: [], // {postId: '', viewed: true/false}
+      },
       posts: [],
       errors: [],
       modalWindowObject: null,
@@ -76,12 +80,17 @@ export default () => {
             const newPost = updatedPosts.find((post) => post.postTitle === title);
             newPost.feedId = feed.feedId;
             newPost.postId = Number(_.uniqueId());
-            newPost.show = null;
-            newPost.viewed = false;
             state.posts = (state.posts).concat([newPost]);
+            const { displaySeparately } = state.uiState.feeds.find((uiFeed) => uiFeed.feedId === newPost.feedId);
+            state.uiState.posts.push({
+              feedId: newPost.feedId,
+              postId: newPost.postId,
+              viewed: false,
+              show: displaySeparately,
+            });
           });
         }));
-      Promise.all([promises])
+      Promise.all(promises)
         .then(() => setTimeout(() => runPostUpdatingProcess(), period));
     };
 
@@ -93,16 +102,23 @@ export default () => {
           const { feed, posts } = parseRss(response.data.contents, url);
           const feedId = Number(_.uniqueId());
           feed.feedId = feedId;
-          feed.active = null;
           posts.forEach((post) => {
             post.feedId = feedId;
             post.postId = Number(_.uniqueId());
-            post.show = null;
-            post.viewed = false;
           });
-
-          state.posts = (state.posts).concat(posts);
+          // store feeds and posts
           state.feeds = (state.feeds).concat(feed);
+          state.posts = (state.posts).concat(posts);
+
+          const uiPosts = posts.reduce((acc, { postId }) => {
+            acc.push({
+              feedId, postId, viewed: false, show: null,
+            });
+            return acc;
+          }, []);
+          // store uiStates of feeds and posts
+          state.uiState.feeds = (state.uiState.feeds).concat({ feedId, displaySeparately: false });
+          state.uiState.posts = (state.uiState.posts).concat(uiPosts);
 
           state.feedFetchingProcess = 'success';
 
@@ -114,7 +130,7 @@ export default () => {
           state.feedFetchingProcess = 'rejected';
         });
     };
-
+    // rss adding event
     elements.formEl.addEventListener('submit', (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
@@ -123,50 +139,49 @@ export default () => {
         state.feedFetchingProcess = 'awaiting';
       });
     });
-
+    // change posts uiState
     elements.postsListContainer.addEventListener('click', (e) => {
       const { target } = e;
       const link = target.closest('a');
       if (link === target) {
         const id = Number(link.dataset.id);
-        state.posts.forEach((post) => {
-          if (post.postId === id) {
-            post.viewed = true;
+        state.uiState.posts.forEach((uiPost) => {
+          if (uiPost.postId === id) {
+            uiPost.viewed = true;
           }
         });
       }
     });
-
+    // store object for modal window
     elements.modalWindow.addEventListener('show.bs.modal', (e) => {
       const button = e.relatedTarget;
       const neededPostId = Number(button.dataset.id);
-      state.posts.forEach((post) => {
-        if (post.postId === neededPostId) {
-          post.viewed = true;
+      state.uiState.posts.forEach((uiPost) => {
+        if (uiPost.postId === neededPostId) {
+          uiPost.viewed = true;
         }
       });
       state.modalWindowObject = (state.posts).find((post) => post.postId === neededPostId);
     });
-
+    // change app language state
     elements.translationButtons.forEach((button) => button.addEventListener('click', (e) => {
       const targetButton = e.target;
       state.currentLng = targetButton.dataset.lang;
     }));
-    // make feeds switchable
+    // make feeds switchable,
+    // change feeds display uiState,
+    // change posts show uiState
     elements.feedsListContainer.addEventListener('click', (e) => {
       const liEl = e.target.closest('li');
-      const title = liEl.querySelector('h3');
-      const titleText = title.textContent;
-      const correspondingFeed = (state.feeds).find((feedItem) => feedItem.feedTitle === titleText);
-      const id = correspondingFeed.feedId;
-      state.posts.forEach((post) => {
-        if (post.feedId === id) {
-          post.show = !post.show;
+      const id = Number(liEl.dataset.id);
+      state.uiState.feeds.forEach((uiFeed) => {
+        if (uiFeed.feedId === id) {
+          uiFeed.displaySeparately = !uiFeed.displaySeparately;
         }
       });
-      state.feeds.forEach((feed) => {
-        if (feed.feedId === id) {
-          feed.active = !feed.active;
+      state.uiState.posts.forEach((uiPost) => {
+        if (uiPost.feedId === id) {
+          uiPost.show = !uiPost.show;
         }
       });
     });

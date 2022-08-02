@@ -1,10 +1,11 @@
 import _ from 'lodash';
 
 const renderFeed = (feed) => {
-  const { feedTitle, feedDescription, active } = feed;
+  const { feedTitle, feedDescription, feedId } = feed;
   const feedItem = document.createElement('li');
   feedItem.classList.add('list-group-item', 'rounded');
   feedItem.setAttribute('style', 'cursor: pointer');
+  feedItem.dataset.id = feedId;
 
   const title = document.createElement('h3');
   title.classList.add('h6', 'm-0');
@@ -17,19 +18,10 @@ const renderFeed = (feed) => {
   feedItem.appendChild(title);
   feedItem.appendChild(description);
 
-  if (active) {
-    feedItem.classList.add('bg-gradient-green');
-    feedItem.classList.add('border');
-    feedItem.classList.add('border-success');
-  } else {
-    feedItem.classList.add('border-0');
-    feedItem.classList.add('border-end-0');
-  }
-
   return feedItem;
 };
 
-const renderPosts = (post) => {
+const renderPosts = (post, viewed) => {
   const {
     postTitle, postLink, postId,
   } = post;
@@ -40,7 +32,7 @@ const renderPosts = (post) => {
   linkEl.href = postLink;
   linkEl.textContent = postTitle;
   linkEl.dataset.id = postId;
-  if (post.viewed) {
+  if (viewed) {
     linkEl.classList.add('fw-normal', 'text-secondary');
   } else {
     linkEl.classList.add('fw-bold');
@@ -81,6 +73,10 @@ export default (elements, i18n, state) => (path, value) => {
           // enable interface
           fieldset.removeAttribute('disabled');
           break;
+        case 'started':
+          // disable interface
+          fieldset.setAttribute('disabled', '');
+          break;
         case 'success':
           // render success feedback message
           feedback.textContent = i18n.t(`${path}.${value}`);
@@ -89,46 +85,72 @@ export default (elements, i18n, state) => (path, value) => {
           formEl.reset();
           input.focus();
           break;
+        case 'rejected': {
+          const errorMessage = _.last(state.errors);
+          feedback.textContent = i18n.t(`errors.${errorMessage}`);
+          feedback.classList.add('text-danger');
+          feedback.classList.remove('text-success');
+          break;
+        }
         default:
-          // disable interface
-          fieldset.setAttribute('disabled', '');
           break;
       }
       break;
 
     case 'feeds': {
       // render last added feed item
-      feedsListContainer.innerHTML = '';
       feedsCardTitle.textContent = i18n.t('userInterface.feedsCardTitle');
-      value.forEach((feed) => feedsListContainer.append(renderFeed(feed)));
+      const feed = _.last(value);
+      const renderedFeed = renderFeed(feed);
+      feedsListContainer.append(renderedFeed);
       break;
     }
 
     case 'posts': {
-      // render post items
-      postsListContainer.innerHTML = '';
       postsCardTitle.textContent = i18n.t('userInterface.postsCardTitle');
-      const isAnyActiveFeed = value.some((post) => post.show === true);
+      break;
+    }
+
+    case 'uiState.feeds': {
+      value.forEach(({ feedId, displaySeparately }) => {
+        const feedElement = feedsListContainer.querySelector(`li[data-id="${feedId}"`);
+        if (displaySeparately) {
+          feedElement.classList.add('bg-gradient-green');
+          feedElement.classList.add('border');
+          feedElement.classList.add('border-success');
+          feedElement.classList.remove('border-0');
+          feedElement.classList.remove('border-end-0');
+        } else {
+          feedElement.classList.remove('bg-gradient-green');
+          feedElement.classList.remove('border');
+          feedElement.classList.remove('border-success');
+          feedElement.classList.add('border-0');
+          feedElement.classList.add('border-end-0');
+        }
+      });
+      break;
+    }
+
+    case 'uiState.posts': {
+      postsListContainer.innerHTML = '';
+      const isAnyActiveFeed = state.uiState.feeds.some((uiFeed) => uiFeed.displaySeparately === true);
       if (isAnyActiveFeed) {
-        // show specified posts
-        const renderedPostElements = value.map((post) => {
-          if (post.show) {
-            return renderPosts(post);
+        state.uiState.posts.forEach(({ postId, viewed, show }) => {
+          if (show) {
+            const neededPost = state.posts.find((post) => post.postId === postId);
+            const renderedPost = renderPosts(neededPost, viewed);
+            const modalButtonPreview = renderedPost.querySelector('button');
+            modalButtonPreview.textContent = i18n.t('userInterface.modalButtonPreview');
+            postsListContainer.prepend(renderedPost);
           }
-          return null;
-        }).filter((val) => val !== null);
-        renderedPostElements.forEach((el) => {
-          const modalButtonPreview = el.querySelector('button');
-          modalButtonPreview.textContent = i18n.t('userInterface.modalButtonPreview');
-          postsListContainer.prepend(el);
         });
       } else {
-        // show all posts
-        const renderedPostElements = value.map((post) => renderPosts(post));
-        renderedPostElements.forEach((el) => {
-          const modalButtonPreview = el.querySelector('button');
+        value.forEach(({ postId, viewed }) => {
+          const neededPost = state.posts.find((post) => post.postId === postId);
+          const renderedPost = renderPosts(neededPost, viewed);
+          const modalButtonPreview = renderedPost.querySelector('button');
           modalButtonPreview.textContent = i18n.t('userInterface.modalButtonPreview');
-          postsListContainer.prepend(el);
+          postsListContainer.prepend(renderedPost);
         });
       }
       break;
@@ -149,15 +171,6 @@ export default (elements, i18n, state) => (path, value) => {
       // also allows users to see images (<img>) embedded in description
       modalBody.innerHTML = postDescriptionWithNoLastHref;
       linkToOriginal.href = postLink;
-      break;
-    }
-
-    case 'errors': {
-      // render fail feedback message
-      const errorMessage = _.last(value);
-      feedback.textContent = i18n.t(`${path}.${errorMessage}`);
-      feedback.classList.add('text-danger');
-      feedback.classList.remove('text-success');
       break;
     }
 
