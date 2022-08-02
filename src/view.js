@@ -18,7 +18,7 @@ const renderFeed = (feed) => {
   feedItem.appendChild(title);
   feedItem.appendChild(description);
 
-  return feedItem;
+  return { feedItem };
 };
 
 const renderPosts = (post, viewed) => {
@@ -49,7 +49,7 @@ const renderPosts = (post, viewed) => {
   postItem.append(linkEl);
   postItem.append(buttonEl);
 
-  return postItem;
+  return { postItem };
 };
 
 export default (elements, i18n, state) => (path, value) => {
@@ -101,8 +101,8 @@ export default (elements, i18n, state) => (path, value) => {
       // render last added feed item
       feedsCardTitle.textContent = i18n.t('userInterface.feedsCardTitle');
       const feed = _.last(value);
-      const renderedFeed = renderFeed(feed);
-      feedsListContainer.append(renderedFeed);
+      const { feedItem } = renderFeed(feed);
+      feedsListContainer.append(feedItem);
       break;
     }
 
@@ -138,19 +138,19 @@ export default (elements, i18n, state) => (path, value) => {
         state.uiState.posts.forEach(({ postId, viewed, show }) => {
           if (show) {
             const neededPost = state.posts.find((post) => post.postId === postId);
-            const renderedPostElement = renderPosts(neededPost, viewed);
-            const modalButtonPreview = renderedPostElement.querySelector('button');
+            const { postItem } = renderPosts(neededPost, viewed);
+            const modalButtonPreview = postItem.querySelector('button');
             modalButtonPreview.textContent = i18n.t('userInterface.modalButtonPreview');
-            postsListContainer.prepend(renderedPostElement);
+            postsListContainer.prepend(postItem);
           }
         });
       } else {
         value.forEach(({ postId, viewed }) => {
           const neededPost = state.posts.find((post) => post.postId === postId);
-          const renderedPostElement = renderPosts(neededPost, viewed);
-          const modalButtonPreview = renderedPostElement.querySelector('button');
+          const { postItem } = renderPosts(neededPost, viewed);
+          const modalButtonPreview = postItem.querySelector('button');
           modalButtonPreview.textContent = i18n.t('userInterface.modalButtonPreview');
-          postsListContainer.prepend(renderedPostElement);
+          postsListContainer.prepend(postItem);
         });
       }
       break;
