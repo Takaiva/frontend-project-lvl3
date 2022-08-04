@@ -39,7 +39,7 @@ export default () => {
       feeds: [],
       uiState: {
         feeds: [], // {feedId: '', displaySeparately: true/false}
-        posts: [], // {postId: '', viewed: true/false}
+        posts: [], // {feedId: '', postId: '', viewed: true/false, show: true/false}
       },
       posts: [],
       errors: [],
@@ -127,6 +127,7 @@ export default () => {
           state.form.isValid = true;
         })
         .catch((error) => {
+          // store errors
           state.errors.push(`${error.message}`);
           state.form.isValid = false;
           state.feedFetchingProcess = 'rejected';
@@ -141,7 +142,7 @@ export default () => {
         state.feedFetchingProcess = 'awaiting';
       });
     });
-    // change posts uiState
+    // change posts viewed uiState
     elements.postsListContainer.addEventListener('click', (e) => {
       const { target } = e;
       const link = target.closest('a');

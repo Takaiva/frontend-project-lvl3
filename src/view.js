@@ -86,6 +86,7 @@ export default (elements, i18n, state) => (path, value) => {
           input.focus();
           break;
         case 'rejected': {
+          // render failed feedback message
           const errorMessage = _.last(state.errors);
           feedback.textContent = i18n.t(`errors.${errorMessage}`);
           feedback.classList.add('text-danger');
