@@ -91,6 +91,7 @@ export default () => {
             });
           });
         }));
+      // next update starts only when the previous is finished
       Promise.all(promises)
         .then(() => setTimeout(() => runPostUpdatingProcess(), period));
     };
